@@ -8,7 +8,7 @@ mixin postUI(posts)
       - let no_cover = article.cover === false || !theme.cover.index_enable ? 'no-cover' : ''
       if post_cover && theme.cover.index_enable
         .post_cover(class=leftOrRight)
-          a(href=url_for(link) title=title)      
+          a(href=url_for(link) title=title)
             img.post_bg(src=url_for(post_cover) onerror=`this.onerror=null;this.src='`+ url_for(theme.error_img.post_page) + `'` alt=title)
       .recent-post-info(class=no_cover)
         a.article-title(href=url_for(link) title=title)= title
@@ -20,7 +20,7 @@ mixin postUI(posts)
               span.article-meta__separator |
           if (theme.post_meta.page.date_type)
             span.post-meta-date
-              if (theme.post_meta.page.date_type === 'both')               
+              if (theme.post_meta.page.date_type === 'both')
                 i.far.fa-calendar-alt
                 span.article-meta-label=_p('post.created')
                 time.post-meta-date-created(datetime=date_xml(article.date) title=_p('post.created') + ' ' + full_date(article.date))=date(article.date, config.date_format)
@@ -52,7 +52,7 @@ mixin postUI(posts)
                 a(href=url_for(item.path)).article-meta__tags #[=item.name]
                 if (index < article.tags.data.length - 1)
                   span.article-meta__link #[='•']
-          
+
           mixin countBlockInIndex
             - needLoadCountJs = true
             span.article-meta
@@ -61,7 +61,7 @@ mixin postUI(posts)
               if block
                 block
               span.article-meta-label= ' ' + _p('card_post_count')
-          
+
           if theme.comments.card_post_count
             case theme.comments.use[0]
               when 'Disqus'
@@ -95,12 +95,12 @@ mixin postUI(posts)
               .content!= article.description
             else
               - const content = strip_html(article.content)
-              - let expert = content.substring(0, theme.index_post_content.length) 
+              - let expert = content.substring(0, theme.index_post_content.length)
               - content.length > theme.index_post_content.length ? expert += ' ...' : ''
               .content!= expert
           default
             - const content = strip_html(article.content)
-            - let expert = content.substring(0, theme.index_post_content.length) 
+            - let expert = content.substring(0, theme.index_post_content.length)
             - content.length > theme.index_post_content.length ? expert += ' ...' : ''
             .content!= expert
 
