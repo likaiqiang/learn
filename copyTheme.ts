@@ -1,6 +1,7 @@
 import copydir from 'copy-dir'
 import Path from 'path'
 import directoryExists from 'directory-exists'
+import fs from 'fs'
 
 class Copy{
     protected moduleName:string
@@ -17,7 +18,11 @@ class Copy{
             if(!result){
                 fs.mkdirSync(toDir)
             }
-            copydir(fromDir,toDir)
+            copydir(fromDir,toDir,{
+                utimes: true,
+                mode: true,
+                cover: true
+            })
         })
     }
 }
