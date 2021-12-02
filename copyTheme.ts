@@ -16,7 +16,7 @@ class Copy{
         const toDir = Path.resolve('./themes/' + this.themeName)
         directoryExists(Path.resolve('./themes'),function (err,result){
             if(!result){
-                fs.mkdirSync(toDir)
+                fs.mkdirSync(toDir,{recursive: true})
             }
             copydir(fromDir,toDir,{
                 utimes: true,
