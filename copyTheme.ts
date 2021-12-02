@@ -12,8 +12,8 @@ class Copy{
         this.action()
     }
     public action(){
-        const fromDir = Path.resolve('./node_modules/' + this.moduleName)
-        const toDir = Path.resolve('./themes/' + this.themeName)
+        const fromDir = Path.join(__dirname,'./node_modules/' + this.moduleName)
+        const toDir = Path.join(__dirname,'./themes/' + this.themeName)
         directoryExists(Path.resolve('./themes'),function (err,result){
             if(!result){
                 fs.mkdirSync(toDir,{recursive: true})
