@@ -28,4 +28,3 @@ class Copy{
 }
 
 new Copy('hexo-theme-butterfly','butterfly')
-
