@@ -16,6 +16,7 @@ jobs:
       - name: Checkout
         run: |
           npm install
+          npx ts-node copyTheme.ts
           npx hexo g
           npx ts-node -T ./oss.ts
       - name: Deploy

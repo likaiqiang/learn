@@ -6,8 +6,7 @@
     "build": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo server",
-    "postinstall": "npx ts-node copyTheme.ts"
+    "server": "hexo server"
   },
   "hexo": {
     "version": "5.4.0"
