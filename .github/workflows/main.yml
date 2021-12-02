@@ -12,8 +12,11 @@ jobs:
       ACCESSKEYSECRET: ${{ secrets.ACCESSKEYSECRET }}
       ACCESSKEYID: ${{ secrets.ACCESSKEYID }}
     steps:
-      - uses: actions/checkout@master
       - name: Checkout
+      - uses: actions/checkout@master
+      uses: actions/setup-node@v2
+          with:
+            node-version: '14'
         run: |
           npm install
           npx ts-node copyTheme.ts
