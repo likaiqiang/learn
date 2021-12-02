@@ -1,5 +1,6 @@
 import copydir from 'copy-dir'
 import Path from 'path'
+import directoryExists from 'directory-exists'
 
 class Copy{
     protected moduleName:string
@@ -12,7 +13,12 @@ class Copy{
     public action(){
         const fromDir = Path.resolve('./node_modules/' + this.moduleName)
         const toDir = Path.resolve('./themes/' + this.themeName)
-        copydir.sync(fromDir,toDir)
+        directoryExists(Path.resolve('./themes'),function (err,result){
+            if(!result){
+                fs.mkdirSync(toDir)
+            }
+            copydir(fromDir,toDir)
+        })
     }
 }
 
