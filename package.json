@@ -27,7 +27,8 @@
     "hexo-renderer-stylus": "^2.0.0",
     "hexo-server": "^2.0.0",
     "hexo-theme-butterfly": "^3.8.4",
-    "hexo-theme-landscape": "^0.0.3"
+    "hexo-theme-landscape": "^0.0.3",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.11",

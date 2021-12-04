@@ -2,6 +2,7 @@ import copydir from 'copy-dir'
 import Path from 'path'
 import directoryExists from 'directory-exists'
 import fs from 'fs'
+import yaml from 'js-yaml'
 
 class Copy{
     protected moduleName:string
@@ -27,4 +28,20 @@ class Copy{
     }
 }
 
-new Copy('hexo-theme-butterfly','butterfly')
+class ReadConfig{
+    protected configPath:string;
+    constructor(path:string) {
+        this.configPath = path
+    }
+    public action(){
+        try{
+            return yaml.load(fs.readFileSync(this.configPath,'utf-8'))
+        } catch (e){
+            return {}
+        }
+    }
+}
+
+const theme = new ReadConfig(Path.join(__dirname,'./_config.yml')).action().theme || 'butterfly'
+
+new Copy(`hexo-theme-${theme}`,theme)
