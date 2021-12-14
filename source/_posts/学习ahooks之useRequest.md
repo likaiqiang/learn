@@ -180,6 +180,17 @@ runAsync方法会在请求的各个阶段调用runPluginHandler（请求前/中/
 ## Fetch类
 # 插件
 ## 内置插件
+## useDebouncePlugin
+[useDebouncePlugin](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useRequest/src/plugins/useDebouncePlugin.ts)
+大致看一下代码，发现核心实现是调了lodash的debounce方法，那为什么不直接用lodash，究其原因，还要从debounce的原理说起。
+
+[debounce](https://github.com/lodash/lodash/blob/master/debounce.js)
+这东西真反直觉，debounce本质上是个高阶函数，你传一个func函数，它给你返回一个debounced函数，至于剩下的那些lastArgs、lastThis...变量，全存在debounced函数的闭包中，所以保持debounced的唯一（闭包唯一）是重中之重。看一个非react的例子。
+
+[vue debounce](https://cn.vuejs.org/v2/guide/computed.html#%E4%BE%A6%E5%90%AC%E5%99%A8)
+created时在this上放了一个debouncedGetAnswer函数，就是为了保持debounced的闭包唯一。
+
+所以不论是这里的useDebouncePlugin还是单独的useDebounceFn，所做的事都是让debounced函数在组件多次渲染中保持唯一。
 ## 自定义插件
 
 
