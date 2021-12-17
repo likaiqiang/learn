@@ -156,14 +156,16 @@ fetchInstance.pluginImpls = plugins.map((p) => p(fetchInstance, fetchOptions)); 
 ```
 [PluginReturn](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useRequest/src/types.ts#L16)
 
-pluginImpls其实就是一个含有onBefore、onRequest...等生命周期函数的对象集合。而这些生命周期就是插件系统的灵魂。大概瞅一眼[runPluginHandler](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useRequest/src/Fetch.ts#L37) 的实现
+pluginImpls其实就是一个含有onBefore、onRequest...等生命周期函数的对象集合。而这些生命周期就是插件系统的灵魂。Fetch内部通过一个叫runPluginHandler的函数调用各个插件（pluginImpls）。
+
+大概瞅一眼[runPluginHandler](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useRequest/src/Fetch.ts#L37) 的实现
 ```typescript
 runPluginHandler(event: keyof PluginReturn<TData, TParams>, ...rest: any[]) {
     const r = this.pluginImpls.map((i) => i[event]?.(...rest)).filter(Boolean);
     return Object.assign({}, ...r);
 }
 ```
-这句话其实挺费解的，我们看Fetch内部是怎么调用runPluginHandler的。
+我们看Fetch内部都在什么时机调用runPluginHandler。
 
 [runAsync](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useRequest/src/Fetch.ts#L43)
 [cancel](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useRequest/src/Fetch.ts#L136)
@@ -171,9 +173,11 @@ runPluginHandler(event: keyof PluginReturn<TData, TParams>, ...rest: any[]) {
 
 runAsync方法会在请求的各个阶段调用runPluginHandler（请求前/中/后...），onBefore/onRequest/onSuccess...，而这些钩子函数或者直接干预runAsync的执行，或者通过返回[约定的值](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useRequest/src/types.ts#L16) 来干预runAsync的执行。
 
+总的来说，所谓的插件就是一个返回PluginReturn的函数，而PluginReturn中的各个生命周期函数会在Fetch的关键方法执行时调用。
+
 这就是插件的工作原理，我们也可以写插件来执行上述过程。
 
-回到主线。然后在组件挂载时执行fetchInstance.run()（假设manual为false），组件卸载时执行fetchInstance.cancel()，然后返回一大堆fetchInstance的属性/方法。
+回到主线。在组件挂载时执行fetchInstance.run()（假设manual为false），组件卸载时执行fetchInstance.cancel()，然后返回一大堆fetchInstance的属性/方法。
 
 # 旁支
 ## hooks
