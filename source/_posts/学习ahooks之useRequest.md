@@ -272,9 +272,16 @@ this.setState({
 代码很清晰，所做的事就是不调用server直接setState(data)，顺便调用插件的onMutate钩子，从代码来看，data还可以是个函数。
 
 ## hooks
+### useLatest
+### useUpdate
+### useCreation
+### useMount
+### useUnmount
+### useMemoizedFn
+
 # 插件
 ## 内置插件
-## useDebouncePlugin
+### useDebouncePlugin
 [useDebouncePlugin](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useRequest/src/plugins/useDebouncePlugin.ts)
 大致看一下代码，发现核心实现是调了lodash的debounce方法，那为什么不直接用lodash，究其原因，还要从debounce的原理说起。
 
