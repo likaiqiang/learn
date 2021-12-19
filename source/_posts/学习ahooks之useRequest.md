@@ -397,6 +397,110 @@ export default () => {
 ```
 从log可以看出func唯一，func中的count也唯一，但是jsx中的count会持续的增加。这是因为setCount的第一个参数不再是func闭包中不变的count，而是latesCount.current。
 ### useMemoizedFn
+[官方例子](https://ahooks-next.surge.sh/zh-CN/hooks/use-memoized-fn)
+
+为什么存在这个hooks，useCallback又有什么缺点。为什么要保证函数的地址永远不变，举个例子来看一看这个问题。
+```typescript jsx
+import React, { useState, useCallback } from 'react';
+import { useLatest } from 'ahooks';
+
+export default () => {
+  const [count, setCount] = useState(0);
+
+
+  // const latestCountRef = useLatest(count);
+
+  const onClickHandler = useCallback(()=>{
+    setCount(count + 1)
+  },[count])
+
+  return (
+    <>
+      <p>{count}</p>
+      <button onClick={onClickHandler}>add count</button>
+      <Child/>
+    </>
+  );
+};
+
+
+const Child = (props)=>{
+  console.log('child render')
+  return (
+    <div>我是child</div>
+  )
+}
+```
+每次点击add count button，Child组件都会rerender，万一Child组件很大，或者嵌套层次很深呢，这无疑带来了巨大的性能问题。
+
+用React.memo包一下会好一点。
+```typescript jsx
+const Child = React.memo((props)=>{
+  console.log('child render')
+  return (
+    <div>我是child</div>
+  )
+})
+```
+这样点击add count button，Child组件就不渲染了。但是React.momo在props变化时还是会rerender，代码改成这样。
+```typescript jsx
+export default () => {
+  const [count, setCount] = useState(0);
+
+
+  // const latestCountRef = useLatest(count);
+
+  const onClickHandler = useCallback(()=>{
+    setCount(count + 1)
+  },[count])
+
+  return (
+    <>
+      <p>{count}</p>
+      <button onClick={onClickHandler}>add count</button>
+      <Child func={onClickHandler}/>
+    </>
+  );
+};
+
+
+const Child = React.memo((props)=>{
+  console.log('child render')
+  return (
+    <div>我是child</div>
+  )
+})
+```
+可以发现点击add count button，Child组件竟然重新渲染了，由此可见，每次setCount，onClickHandler都会指向一个新的函数地址。怎么规避呢，来看一看useMemoizedFn的实现。
+
+[useMemoizedFn](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useMemoizedFn/index.ts)
+```typescript jsx
+function useMemoizedFn<T extends noop>(fn: T) {
+  if (process.env.NODE_ENV === 'development') {
+    if (typeof fn !== 'function') {
+      console.error(`useMemoizedFn expected parameter is a function, got ${typeof fn}`);
+    }
+  }
+
+  const fnRef = useRef<T>(fn);
+
+  // why not write `fnRef.current = fn`?
+  // https://github.com/alibaba/hooks/issues/728
+  fnRef.current = useMemo(() => fn, [fn]);
+
+  const memoizedFn = useRef<T>();
+  if (!memoizedFn.current) {
+    memoizedFn.current = function (...args) {
+      // eslint-disable-next-line @typescript-eslint/no-invalid-this
+      return fnRef.current.apply(this, args);
+    } as T;
+  }
+
+  return memoizedFn.current;
+}
+```
+useMemoizedFn本质上是个高阶函数。有两个useRef，一个存储变化的fn，一个存储永远不变的memoizedFn，调用useMemoizedFn时真正调用的是memoizedFn，然后在memoizedFn内部调用最新的fn。高阶函数的思路。
+
 ### useCreation
 ### useUpdate
 ### useMount
