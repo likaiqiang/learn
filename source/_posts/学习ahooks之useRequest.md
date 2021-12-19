@@ -273,11 +273,134 @@ this.setState({
 
 ## hooks
 ### useLatest
-### useUpdate
+[useLatest](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useLatest/index.ts)
+简简单单几行代码，道不出这个hooks的真谛，我们来看官方[例子](https://ahooks-next.surge.sh/zh-CN/hooks/use-latest) 。
+```typescript
+import React, { useState, useEffect } from 'react';
+import { useLatest } from 'ahooks';
+
+export default () => {
+  const [count, setCount] = useState(0);
+
+  const latestCountRef = useLatest(count);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount(latestCountRef.current + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <>
+      <p>count: {count}</p>
+    </>
+  );
+};
+```
+把useLatest去掉
+```typescript jsx
+import React, { useState, useEffect } from 'react';
+import { useLatest } from 'ahooks';
+
+export default () => {
+  const [count, setCount] = useState(0);
+
+  // const latestCountRef = useLatest(count);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount(count+1)
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <>
+      <p>count: {count}</p>
+    </>
+  );
+};
+```
+可以自己用codesanbox运行运行一下这段代码，会发现jsx中count的值永远都是1。为什么会这样呢？这是因为每次setInterval在触发回调时，这个回调函数的地址都是一样的，也就是说每次调用的回调函数都是同一个，一旦函数唯一，该函数在创建时拥有的闭包就唯一，而count在每次rerender时都会重新生成，所以储存在setInterval函数闭包里的count永远都是第一次的count。
+
+稍微改一点代码，验证一下这个过程。
+```typescript jsx
+useEffect(() => {
+const func = ()=>{
+  console.log('count',count)
+  setCount(count+1)
+}
+func.time = new Date().getTime()
+const interval = setInterval(() => {
+  console.log(func.time)
+  func()
+}, 1000);
+return () => clearInterval(interval);
+}, []);
+```
+每次输出的func.time都是同一个值，count也是同一个值。这就验证了上述函数唯一，闭包唯一的结论。
+
+那怎么才能让代码正常运行呢？有两种解决方案：
+1. 函数不唯一。
+2. 函数唯一，但是闭包里的count是不可变的。
+
+第一种方案：
+```typescript jsx
+useEffect(() => {
+    const func = ()=>{
+      console.log('count',count)
+      setCount(count+1)
+    }
+    func.time = new Date().getTime()
+    const interval = setInterval(() => {
+      console.log(func.time)
+      func()
+    }, 1000);
+    return () => {
+      console.log('unbind')
+      clearInterval(interval);
+    }
+  }, [count]);
+```
+看起来挺好的，只需要改变一些useEffect的依赖，但是从log可以看出，会不停的输出unbind，所以这种方式是通过不停的unbind/bind的方式来实现函数的不唯一，这就不好了。
+
+第二种方案：
+```typescript jsx
+export default () => {
+  const [count, setCount] = useState(0);
+
+  const latesCount = useRef(count)
+  latesCount.current = count
+  useEffect(() => {
+    const func = ()=>{
+      console.log('count',count)
+      setCount(latesCount.current+1)
+    }
+    func.time = new Date().getTime()
+    const interval = setInterval(() => {
+      console.log(func.time)
+      func()
+    }, 1000);
+    return () => {
+      console.log('unbind')
+      clearInterval(interval);
+    }
+  }, []);
+
+  return (
+    <>
+      <p>count: {count}</p>
+    </>
+  );
+};
+```
+从log可以看出func唯一，func中的count也唯一，但是jsx中的count会持续的增加。这是因为setCount的第一个参数不再是func闭包中不变的count，而是latesCount.current。
+### useMemoizedFn
 ### useCreation
+### useUpdate
 ### useMount
 ### useUnmount
-### useMemoizedFn
 
 # 插件
 ## 内置插件
