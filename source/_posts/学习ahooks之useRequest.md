@@ -71,7 +71,7 @@ function useRequestImplement<TData, TParams extends any[]>(
     );
   }, []); // useCreation第三个旁支
   fetchInstance.options = fetchOptions;
-  // run all plugins hooks
+  // run all plugins hook
   fetchInstance.pluginImpls = plugins.map((p) => p(fetchInstance, fetchOptions)); // 从这一句可以推出每个插件都是一个接收fetchInstance与fetchOptions的函数。
     // 执行所有的插件，并把结果存到fetchInstance.pluginImpls上
 
@@ -111,11 +111,11 @@ function useRequestImplement<TData, TParams extends any[]>(
 [useUnmount](https://ahooks-next.surge.sh/zh-CN/hooks/use-unmount)
 [useMemoizedFn](https://ahooks-next.surge.sh/zh-CN/hooks/use-memoized-fn)
 
-通过文档可以看出useLatest的作用是返回某个参数的最新值，useCreation的作用是使某个值保持绝对不变（除非依赖发生变化）,useMemoizedFn的作用是使函数的地址永远不变。这三个都属于性能优化hooks，对于我们理解useRequest可以暂时忽略。
+通过文档可以看出useLatest的作用是返回某个参数的最新值，useCreation的作用是使某个值保持绝对不变（除非依赖发生变化）,useMemoizedFn的作用是使函数的地址永远不变。这三个都属于性能优化hook，对于我们理解useRequest可以暂时忽略。
 
 而useUpdate，顾名思义，返回一个强制刷新的函数，用于整个组件树重新渲染。
 
-useMount与useUnmount属于生命周期hooks，分别在组件挂载与卸载时触发。
+useMount与useUnmount属于生命周期hook，分别在组件挂载与卸载时触发。
 
 综上，useRequestImplement做的事其实就是，通过new Fetch生成一个fetchInstance实例，参数除了serviceRef、fetchOptions、update外，还有initState。瞅一眼initState。
 ```typescript
@@ -245,7 +245,7 @@ setState(s: Partial<FetchState<TData, TParams>> = {}) {
     this.subscribe();
 }
 ```
-调用了一个奇怪的subscribe函数，这个subscribe就是Fetch实例化时传入的update函数（useUpdate），目的是使整个组件rerender，让react组件拿到最新的Fetch成员变量。
+调用了一个奇怪的subscribe函数，这个subscribe就是Fetch实例化时传入的update函数（useUpdate），目的是使组件rerender，让react组件拿到最新的Fetch成员变量。
 
 回到runAsync主线。如果returnNow === true，返回空的promise，与前一步骤不同的是，这时的loading是true。然后调用options的onBefore函数，说明插件的onBefore是先于options.onBefore执行的，并且可以干预是否执行options.onBefore。
 
@@ -399,7 +399,7 @@ export default () => {
 ### useMemoizedFn
 [官方例子](https://ahooks-next.surge.sh/zh-CN/hooks/use-memoized-fn)
 
-为什么存在这个hooks，useCallback又有什么缺点。为什么要保证函数的地址永远不变，举个例子来看一看这个问题。
+为什么存在这个hook，useCallback又有什么缺点。为什么要保证函数的地址永远不变，举个例子来看一看这个问题。
 ```typescript jsx
 import React, { useState, useCallback } from 'react';
 import { useLatest } from 'ahooks';
