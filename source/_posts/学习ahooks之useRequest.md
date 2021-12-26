@@ -502,9 +502,41 @@ function useMemoizedFn<T extends noop>(fn: T) {
 useMemoizedFn本质上是个高阶函数。有两个useRef，一个存储变化的fn，一个存储永远不变的memoizedFn，调用useMemoizedFn时真正调用的是memoizedFn，然后在memoizedFn内部调用最新的fn。高阶函数的思路。
 
 ### useCreation
+[useCreation](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useCreation/index.ts)
+[文档](https://ahooks.js.org/zh-CN/hooks/use-creation)
+
+正如官方文档说的那样，useRef并不能保证参数绝对不变，所以需要useCreation，我们来看是怎么实现的。
+```typescript jsx
+export default function useCreation<T>(factory: () => T, deps: DependencyList) {
+  const { current } = useRef({
+    deps,
+    obj: undefined as undefined | T,
+    initialized: false,
+  });
+  if (current.initialized === false || !depsAreSame(current.deps, deps)) {
+    current.deps = deps;
+    current.obj = factory();
+    current.initialized = true;
+  }
+  return current.obj as T;
+}
+```
+第一个参数不再是实例本身，而是返回实例的工厂函数，第二个参数是依赖，类型和内置hook类型一样。用一个useRef来保存实例相关的一些参数，只有当initialized为false或者deps发生变化时，才重新执行工厂函数，最后返回实例，如果该实例没有依赖，那么该实例就会唯一。
 ### useUpdate
+```typescript jsx
+const useUpdate = () => {
+  const [, setState] = useState({});
+
+  return useCallback(() => setState({}), []);
+};
+
+export default useUpdate;
+```
+我们都知道，调用useState的setState会使组件树重新渲染，利用这一点可以达到强制刷新的目的。
 ### useMount
 ### useUnmount
+
+useMount与useUnmount。这俩算是最没存在感的hook，内部实现原理都是useEffect。
 
 # 插件
 ## 内置插件
