@@ -1414,6 +1414,14 @@ hexo-generator-index@^2.0.0:
     hexo-pagination "1.0.0"
     timsort "^0.3.0"
 
+hexo-generator-restful@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/hexo-generator-restful/-/hexo-generator-restful-0.2.3.tgz#7c3eb595777bf29ec34185b1737b78b37c167dbf"
+  integrity sha512-2j10QDfEG4drdc/6BM1WYxq/GPMsj+0Lh48Hg8linEOhCctBftIscxxBa7z4lzlgtBc16nOAOpgeaADseIlncQ==
+  dependencies:
+    hexo-pagination "^0.1.0"
+    lodash.pick "^4.4.0"
+
 hexo-generator-search@^2.4.3:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/hexo-generator-search/-/hexo-generator-search-2.4.3.tgz#c4f35c8b8429355612dd1cdf5a18de3568166f99"
@@ -1454,6 +1462,13 @@ hexo-pagination@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/hexo-pagination/-/hexo-pagination-1.0.0.tgz#c9c0ca3665267b9e9d0a89fc3edcaf3276907dc1"
   integrity sha512-miEVFgxchPr2qNWxw0JWpJ9R/Yaf7HjHBZVjvCCcqfbsLyYtCvIfJDxcEwz1sDOC/fLzYPqNnhUI73uNxBHRSA==
+
+hexo-pagination@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/hexo-pagination/-/hexo-pagination-0.1.0.tgz#54f0be12e6ae51d1c0a6f0023674ba77ac514ce3"
+  integrity sha1-VPC+EuauUdHApvACNnS6d6xRTOM=
+  dependencies:
+    object-assign "^4.1.0"
 
 hexo-renderer-ejs@^2.0.0:
   version "2.0.0"
@@ -1508,10 +1523,10 @@ hexo-server@^3.0.0:
     picocolors "^1.0.0"
     serve-static "^1.14.1"
 
-hexo-theme-butterfly@^3.8.4:
-  version "3.8.4"
-  resolved "https://registry.yarnpkg.com/hexo-theme-butterfly/-/hexo-theme-butterfly-3.8.4.tgz#b4cfe313e77fafc0586b8f4e6985a7f69082846b"
-  integrity sha512-d7S3LVVxmpWhL0YEYhMUejLMHbbTTosB8yLDkAnbe04HA4IoYiZTlE5zYdmLEcxIiNzyjW5Va4tnn4CNggR0Vg==
+hexo-theme-butterfly@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/hexo-theme-butterfly/-/hexo-theme-butterfly-4.0.1.tgz#9d8b89ac2947a6e081117b5fa0c0b4406de4c7e0"
+  integrity sha512-9D+NOrQ+7P1LmUSF+EioyNb0KiJFBkKxSiXNwYCBzya7na6GTT6EOvTEmqigWxv4+8wCHC8OYfBzXmqFLwQjZQ==
   dependencies:
     hexo-renderer-pug "^2.0.0"
     hexo-renderer-stylus "^2.0.1"
@@ -1989,6 +2004,11 @@ locate-path@^3.0.0:
   dependencies:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
+
+lodash.pick@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
+  integrity sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=
 
 lodash@^4.0.0, lodash@^4.17.15, lodash@^4.7.0, lodash@~4.17.10:
   version "4.17.21"
