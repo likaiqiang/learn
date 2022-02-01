@@ -54,5 +54,6 @@
     "lang": "en",
     "dir": "ltr",
     "description": "Akilar.top",
-    "scope": "/"
+    "scope": "/",
+    "start_url": "/"
 }
