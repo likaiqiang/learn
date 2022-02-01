@@ -22,8 +22,8 @@ jobs:
         run: |
           npm install
           npx ts-node copyTheme.ts
-          npx gulp
           npx hexo g
+          npx gulp
           npx ts-node -T ./oss.ts
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.3
