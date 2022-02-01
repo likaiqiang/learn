@@ -1,0 +1,60 @@
+diff --git a/node_modules/hexo-theme-butterfly/layout/includes/additional-js.pug b/node_modules/hexo-theme-butterfly/layout/includes/additional-js.pug
+index 79fc8b4..ac0c44c 100644
+--- a/node_modules/hexo-theme-butterfly/layout/includes/additional-js.pug
++++ b/node_modules/hexo-theme-butterfly/layout/includes/additional-js.pug
+@@ -70,3 +70,6 @@ div
+ 
+   if theme.busuanzi.site_uv || theme.busuanzi.site_pv || theme.busuanzi.page_pv
+     script(async data-pjax src=url_for(theme.CDN.busuanzi))
++
++  if theme.pwa.enable
++    !=partial('includes/third-party/pwanotice', {}, {cache:theme.fragment_cache})
+diff --git a/node_modules/hexo-theme-butterfly/layout/includes/third-party/pwanotice.pug b/node_modules/hexo-theme-butterfly/layout/includes/third-party/pwanotice.pug
+new file mode 100644
+index 0000000..d106b74
+--- /dev/null
++++ b/node_modules/hexo-theme-butterfly/layout/includes/third-party/pwanotice.pug
+@@ -0,0 +1,43 @@
++#app-refresh.app-refresh(style='position: fixed;top: -2.2rem;left: 0;right: 0;z-index: 99999;padding: 0 1rem;font-size: 15px;height: 2.2rem;transition: all 0.3s ease;')
++    .app-refresh-wrap(style=' display: flex;color: #fff;height: 100%;align-items: center;justify-content: center;')
++        label ✨ 博客更新啦！ 👉
++        a(href='javascript:void(0)' onclick='location.reload()')
++            span(style='color: #fff;text-decoration: underline;cursor: pointer;') 🍭查看新品🍬
++script.
++    if ('serviceWorker' in navigator) {
++        if (navigator.serviceWorker.controller) {
++            navigator.serviceWorker.addEventListener('controllerchange', function() {
++                showNotification()
++            })
++        }
++        window.addEventListener('load', function() {
++            navigator.serviceWorker.register('/sw.js')
++        })
++    }
++    function showNotification() {
++        if (GLOBAL_CONFIG.Snackbar) {
++            var snackbarBg =
++                document.documentElement.getAttribute('data-theme') === 'light' ?
++                    GLOBAL_CONFIG.Snackbar.bgLight :
++                    GLOBAL_CONFIG.Snackbar.bgDark
++            var snackbarPos = GLOBAL_CONFIG.Snackbar.position
++            Snackbar.show({
++                text: '✨ 博客更新啦！ 👉',
++                backgroundColor: snackbarBg,
++                duration: 500000,
++                pos: snackbarPos,
++                actionText: '🍭查看新品🍬',
++                actionTextColor: '#fff',
++                onActionClick: function(e) {
++                    location.reload()
++                },
++            })
++        } else {
++            var showBg =
++                document.documentElement.getAttribute('data-theme') === 'light' ?
++                    '#49b1f5' :
++                    '#1f1f1f'
++            var cssText = `top: 0; background: ${showBg};`
++            document.getElementById('app-refresh').style.cssText = cssText
++        }
++    }
