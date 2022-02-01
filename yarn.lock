@@ -57,10 +57,10 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
-"@types/node@^17.0.8":
-  version "17.0.8"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.8.tgz#50d680c8a8a78fe30abe6906453b21ad8ab0ad7b"
-  integrity sha512-YofkM6fGv4gDJq78g4j0mMuGMkZVxZDgtU0JRdx6FgiJDG+0fY0GKVolOV8WqVmEhLCXkQRjwDdKyPxJp/uucg==
+"@types/node@^17.0.12":
+  version "17.0.12"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.12.tgz#f7aa331b27f08244888c47b7df126184bc2339c5"
+  integrity sha512-4YpbAsnJXWYK/fpTVFlMIcUIho2AYCi4wg5aNPrG1ng7fn/1/RZfCIpRCiBX+12RVa34RluilnvCqD+g3KiSiA==
 
 JSONStream@^1.0.7:
   version "1.3.5"
@@ -1414,6 +1414,14 @@ hexo-generator-index@^2.0.0:
     hexo-pagination "1.0.0"
     timsort "^0.3.0"
 
+hexo-generator-restful@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/hexo-generator-restful/-/hexo-generator-restful-0.2.3.tgz#7c3eb595777bf29ec34185b1737b78b37c167dbf"
+  integrity sha512-2j10QDfEG4drdc/6BM1WYxq/GPMsj+0Lh48Hg8linEOhCctBftIscxxBa7z4lzlgtBc16nOAOpgeaADseIlncQ==
+  dependencies:
+    hexo-pagination "^0.1.0"
+    lodash.pick "^4.4.0"
+
 hexo-generator-search@^2.4.3:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/hexo-generator-search/-/hexo-generator-search-2.4.3.tgz#c4f35c8b8429355612dd1cdf5a18de3568166f99"
@@ -1454,6 +1462,13 @@ hexo-pagination@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/hexo-pagination/-/hexo-pagination-1.0.0.tgz#c9c0ca3665267b9e9d0a89fc3edcaf3276907dc1"
   integrity sha512-miEVFgxchPr2qNWxw0JWpJ9R/Yaf7HjHBZVjvCCcqfbsLyYtCvIfJDxcEwz1sDOC/fLzYPqNnhUI73uNxBHRSA==
+
+hexo-pagination@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/hexo-pagination/-/hexo-pagination-0.1.0.tgz#54f0be12e6ae51d1c0a6f0023674ba77ac514ce3"
+  integrity sha1-VPC+EuauUdHApvACNnS6d6xRTOM=
+  dependencies:
+    object-assign "^4.1.0"
 
 hexo-renderer-ejs@^2.0.0:
   version "2.0.0"
@@ -1508,10 +1523,10 @@ hexo-server@^3.0.0:
     picocolors "^1.0.0"
     serve-static "^1.14.1"
 
-hexo-theme-butterfly@^3.8.4:
-  version "3.8.4"
-  resolved "https://registry.yarnpkg.com/hexo-theme-butterfly/-/hexo-theme-butterfly-3.8.4.tgz#b4cfe313e77fafc0586b8f4e6985a7f69082846b"
-  integrity sha512-d7S3LVVxmpWhL0YEYhMUejLMHbbTTosB8yLDkAnbe04HA4IoYiZTlE5zYdmLEcxIiNzyjW5Va4tnn4CNggR0Vg==
+hexo-theme-butterfly@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/hexo-theme-butterfly/-/hexo-theme-butterfly-4.0.1.tgz#9d8b89ac2947a6e081117b5fa0c0b4406de4c7e0"
+  integrity sha512-9D+NOrQ+7P1LmUSF+EioyNb0KiJFBkKxSiXNwYCBzya7na6GTT6EOvTEmqigWxv4+8wCHC8OYfBzXmqFLwQjZQ==
   dependencies:
     hexo-renderer-pug "^2.0.0"
     hexo-renderer-stylus "^2.0.1"
@@ -1989,6 +2004,11 @@ locate-path@^3.0.0:
   dependencies:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
+
+lodash.pick@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
+  integrity sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=
 
 lodash@^4.0.0, lodash@^4.17.15, lodash@^4.7.0, lodash@~4.17.10:
   version "4.17.21"
@@ -3458,10 +3478,10 @@ type-check@~0.3.2:
   dependencies:
     prelude-ls "~1.1.2"
 
-typescript@^4.5.4:
-  version "4.5.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.4.tgz#a17d3a0263bf5c8723b9c52f43c5084edf13c2e8"
-  integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
+typescript@^4.5.5:
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
+  integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
 
 unescape@^1.0.1:
   version "1.0.1"
