@@ -3431,6 +3431,13 @@ hexo-renderer-pug@^2.0.0:
   dependencies:
     pug "^3.0.2"
 
+hexo-renderer-pug@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/hexo-renderer-pug/-/hexo-renderer-pug-3.0.0.tgz#4ca631cd0ecccefc43b70ac44230d5008956adc2"
+  integrity sha512-PmbLx6VkNv+mPLOe97OC4F8iTzTuj665dSYN7bZKArd4M/q7gb2tNs29VGuAOC50i9tvWY2f+tPQimf0GZ9Hyw==
+  dependencies:
+    pug "^3.0.2"
+
 hexo-renderer-sass@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/hexo-renderer-sass/-/hexo-renderer-sass-0.4.0.tgz#d885a04df93e70fdb4ba107505e6b8093c1a5d87"
