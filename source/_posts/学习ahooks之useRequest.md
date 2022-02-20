@@ -554,3 +554,6 @@ created时在this上放了一个debouncedGetAnswer函数，就是为了保持deb
 ## 自定义插件
 
 
+PS: 最近业务比较忙，再加上ahooks代码不停在变动。先合到master，等过段时间再看。
+
+
