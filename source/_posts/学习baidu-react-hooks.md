@@ -251,4 +251,49 @@ const useActionPending = (func)=>{
 ```
 差不多和源码的实现一致，最大的不同在于，调用dec时源码还判断了此时组件是否已经卸载，避免内存泄露。
 
+#useInfiniteScroll
+[文档](https://ecomfe.github.io/react-hooks/#/zh-CN/hook/infinite-scroll/use-infinite-scroll)
 
+使用useMethods封装的无限滚动，需要配合react-infinite-scroll-component来使用,来看源码。
+
+```javascript
+export function useInfiniteScroll(fetch,options = {}) {
+    const {initialLoad = false, initialItems = []} = options;
+    const initialLoadStarted = useRef(false); // 由于react-infinite-scroll-component并不管第一屏的数据渲染，所以初始的数据必须超过一屏，否则loadMore不触发
+    const initialLoadEnded = useRef(false); // 使用initialLoadStarted与initialLoadEnded分别表示第一次请求（第一屏的数据）是否已经开始请求/是否已经结束请求
+    const [{pendingCount, dataSource, hasMore}, {requestStart, requestEnd}] = useMethods(
+        {pendingCount: 0, dataSource: initialItems, hasMore: true},
+        createContextReducers()
+    ); // 使用useMethods封装核心逻辑，pendingCount表示处于pending状态的网络请求数，可以用来推出是否正在loading
+    const loading = !!pendingCount;
+    const loadMore = useCallback( // 
+        async () => {
+            if (loading) {
+                return;
+            }
+            initialLoadStarted.current = true; //第一次请求开始
+            requestStart();
+            const response = await fetch({offset: dataSource.length});
+            initialLoadEnded.current = true; // 第一次请求结束
+            requestEnd(response);
+        },
+        [loading, requestStart, fetch, dataSource.length, requestEnd]
+    );
+    useEffect(
+        () => {
+            if (initialLoad && !initialLoadStarted.current) { //如果react-infinite-scroll-component已加载，并且第一次请求没有开始，执行loadMore
+                loadMore();
+            }
+        },
+        [initialLoad, loadMore]
+    );
+
+    return {
+        dataSource,
+        loadMore,
+        hasMore,
+        loading,
+        initialLoading: initialLoad && !initialLoadEnded.current, //initialLoading表示第一次请求的状态
+    };
+}
+```
