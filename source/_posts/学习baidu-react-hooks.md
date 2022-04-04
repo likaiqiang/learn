@@ -148,3 +148,107 @@ export default function App() {
 
 忽略typescript，发现与我们自己实现的useMethods差不多，但是为啥叫useMethodsNative，native即原生的，也就是使用useState更新数据，而大多数情况下我们的modal都是复杂数据，所以推荐使用[useMethods](https://github.com/ecomfe/react-hooks/blob/master/packages/methods/src/immer.ts)。
 
+# useBoolean/useSwitch/useSwitch
+
+如果理解了useMethods/useMethodsNative，这三个封装完全是useMethodsNative的快捷方式。
+
+我们来看看文档中useBoolean的例子直接使用useMethods应该怎么写。
+
+```javascript
+const useMethods = (modal,reducers)=>{ // 下文如果有用到useMethods，指的都是这个方法
+    const [state,setState] = useImmer(modal)
+    const methodsRef = useRef()
+    if(!methodsRef.current){
+        methodsRef.current = Object.keys(reducers).reduce((acc,key)=>{
+            const fn = reducers[key]
+            Object.assign(acc,{
+              [key]: (...arg)=>{
+                setState(s=>{
+                  return fn(s,...arg)
+                })
+              }
+            })
+            return acc
+        },{})
+    }
+    return [state,methodsRef.current]
+}
+
+export default () => {
+    const [value, {on, off, toggle}] = useMethods(false,{
+        on() {
+            return true;
+        },
+        off() {
+            return false;
+        },
+        toggle(prevState, arg) {
+            return typeof arg === 'boolean' ? arg : !prevState;
+        },
+    });
+    return (
+        <>
+            <div>
+                <Button className='button1' type="primary" onClick={on}>Switch On</Button>
+                <Button className='button2' danger onClick={off}>Switch Off</Button>
+                <Button className='button3' onClick={toggle}>Toggle Value</Button>
+            </div>
+            <div className='switch'>
+                <p>Current value: <Switch checked={value} /></p>
+            </div>
+            
+        </>
+    )
+};
+```
+封装一下，还是有好处的，假如多处使用，可以使代码变短。
+
+# useArray/useSet/useMap
+
+这仨也是useMethods的快捷方式。
+
+# useActionPending
+
+[文档](https://ecomfe.github.io/react-hooks/#/zh-CN/hook/action-pending/use-action-pending)
+
+假如我们自己用useMethods写一个useActionPending应该怎么做。首先应该区分哪些是state，哪些是ref，pendingCount是state，waitTime是ref。同时还需要一个计数器来统计处于pending状态promise的个数。
+
+```javascript
+const useActionPending = (func)=>{
+    const [count,{inc,dec}] = useMethods(0,{ //统计promise pending的计数器
+        increment(state) {
+            return Math.min(max, state + step);
+        },
+        decrement(state) {
+            return Math.max(min, state - step);
+        },
+        inc(state) {
+            return Math.min(max, state + step);
+        },
+        dec(state) {
+            return Math.max(min, state - step);
+        },
+        reset(state, value = 0) {
+            return value;
+        }
+    })
+    const funcRef = useRef((...arg)=>{ // 封装func为ref
+        inc()
+        return func(...arg).then(()=>{
+            dec()
+        })
+    })
+    useEffect(()=>{
+        funcRef.current = (...arg)=>{
+            inc()
+            return func(...arg).then(()=>{
+                dec()
+            })
+        }
+    },[func,inc,dec]) // 依赖虽然有inc/dec，但是根据useMethods内部实现，这俩都是ref，好巧妙的实现。
+    return [funcRef.current,count]
+}
+```
+差不多和源码的实现一致，最大的不同在于，调用dec时源码还判断了此时组件是否已经卸载，避免内存泄露。
+
+
