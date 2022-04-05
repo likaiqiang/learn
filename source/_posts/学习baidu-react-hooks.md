@@ -297,3 +297,107 @@ export function useInfiniteScroll(fetch,options = {}) {
     };
 }
 ```
+# usePreviousValue
+[文档](https://ecomfe.github.io/react-hooks/#/zh-CN/hook/previous-value/use-previous-value)
+
+文档上说获取某个值的前一个值在某些时候是有用的，比如计算派生state。
+
+```javascript
+export function usePreviousValue<T>(value: T): T | undefined {
+    const cache = useRef<T | undefined>(undefined);
+    useEffect(
+        () => {
+            cache.current = value;
+        },
+        [value]
+    );
+    return cache.current;
+}
+```
+实现的思路也是言简意赅。利用ref缓存value，但是在useEffect执行时才更新ref，所以每次usePreviousValue执行时返回的总是上一次的值。
+
+#useDerivedState
+[文档](https://ecomfe.github.io/react-hooks/#/zh-CN/hook/derived-state/use-derived-state)
+
+文档上说是getDerivedStateFromProps的hook实现，对getDerivedStateFromProps不熟暂不做评价，看源码。
+
+```typescript
+export function useDerivedState<P, S = P>(
+    propValue: P,
+    compute: Derive<P, S> = v => v as unknown as S
+): [S, Dispatch<SetStateAction<S>>] {
+    const [previousPropValue, setPreviousPropValue] = useState(propValue); // 为啥起个名字叫previousxxx，因为根据hooks的特性，虽然每次render propValue的值可能会变，但如果不主动setPreviousPropValue，previousPropValue的值总是等于第一次propValue的值。
+    const [value, setValue] = useState(() => compute(propValue, undefined)); // 计算出第一次的派生state
+
+    if (previousPropValue !== propValue) { // 配合hook的更新特性可以检测出propValue是否改变
+        setValue(state => compute(propValue, state)); // update derivedState
+        setPreviousPropValue(propValue); // update previousvalue
+    }
+
+    return [value, setValue];
+}
+```
+# useOriginalCopy
+[文档](https://ecomfe.github.io/react-hooks/#/zh-CN/hook/previous-value/use-original-copy)
+
+文档上说这个封装的意义在于：某些hooks像useEffect、useCallback都依赖dependency list中的值是否变化来更新，而dependency list的比较规则是引用相等。某些时候两个对象一模一样，但是它们的引用不相等，就会出问题。
+
+文档中的例子不具有代表性，完全可以这样（mark）来实现功能。既然比较规则是引用相等，那就尽量比较值类型。
+
+```javascript
+export default () => {
+    const [effectsCount, runEffect] = useReducer(v => v + 1, 0);
+    const forceUpdate = useReducer(v => v + 1, 0)[1];
+    // This is not memoized
+    const value = {x: 1};
+    // The original copy of value if retrieved on each render
+    // const originalValue = useOriginalCopy(value);
+    // originalValue will be reference equal on different render, effect runs only once
+    // useEffect(
+    //     () => {
+    //         runEffect();
+    //     },
+    //     [originalValue]
+    // );
+    useEffect(
+        () => {
+            runEffect();
+        },
+        [originalValue.x] //mark
+    );
+    console.log(effectsCount);
+    return (
+        <div>
+            <p style={{marginBottom:30}}>Effect run {effectsCount} times.</p>
+            <Button type="primary" onClick={forceUpdate}>Force Update</Button>
+        </div>
+    );
+};
+```
+我觉得大多数情况下不需要useOriginalCopy，暂时想不出使用场景，以后想到了再补充。来看源码。
+
+```typescript
+export function useOriginalCopy<T>(value: T, equals: CustomEquals<T> = shallowEquals): T {
+    const cache = useRef<T>(value); // 思路借鉴了usePreviousValue
+    const equalsRef = useRef(equals); //我觉得某些函数确定不在ui中使用，可以优先使用useCallback
+    useEffect(
+        () => {
+            equalsRef.current = equals;
+        },
+        [equals]
+    );
+    useEffect(
+        () => {
+            if (!equalsRef.current(cache.current, value)) {
+                cache.current = value;
+            }
+        },
+        [value]
+    );
+
+    return equals(cache.current, value) ? cache.current : value; // 思路借鉴了usePreviousValue
+}
+```
+第二个参数默认是浅比较，可以传deepEquals从来衍生出useOriginalDeepCopy。
+
+
