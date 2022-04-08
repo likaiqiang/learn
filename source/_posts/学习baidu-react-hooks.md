@@ -73,8 +73,8 @@ export default () => {
 假如业务场景变了，又要写一大堆，其中许多还是重复的，useMethods就是针对这一情况做的封装。我们先尝试自己封装一个useMethods。
 
 ```javascript
-const useMethods = (modal,reducers)=>{
-    const [state,setState] = useState(modal)
+const useMethods = (model,reducers)=>{
+    const [state,setState] = useState(model)
     const methodsRef = useRef()
     if(!methodsRef.current){
         methodsRef.current = Object.keys(reducers).reduce((acc,key)=>{
@@ -142,11 +142,11 @@ export default function App() {
     );
 }
 ```
-和文档中的例子用法差不多，略有不同。我们都知道react中数据是不可变的，如果你的modal是复杂的数据，更新起来会很麻烦，有一个库叫做[use-immer](https://github.com/immerjs/use-immer)，可以上github看看它的用法，挺好用的，和useState的区别，可以看[这里](https://stackoverflow.com/questions/61669930/whats-the-difference-between-usestate-and-useimmer)
+和文档中的例子用法差不多，略有不同。我们都知道react中数据是不可变的，如果你的model是复杂的数据，更新起来会很麻烦，有一个库叫做[use-immer](https://github.com/immerjs/use-immer)，可以上github看看它的用法，挺好用的，和useState的区别，可以看[这里](https://stackoverflow.com/questions/61669930/whats-the-difference-between-usestate-and-useimmer)
 
 了解了上面一大堆，再来看useMethodsNative[源码](https://github.com/ecomfe/react-hooks/blob/master/packages/methods/src/native.ts)。
 
-忽略typescript，发现与我们自己实现的useMethods差不多，但是为啥叫useMethodsNative，native即原生的，也就是使用useState更新数据，而大多数情况下我们的modal都是复杂数据，所以推荐使用[useMethods](https://github.com/ecomfe/react-hooks/blob/master/packages/methods/src/immer.ts)。
+忽略typescript，发现与我们自己实现的useMethods差不多，但是为啥叫useMethodsNative，native即原生的，也就是使用useState更新数据，而大多数情况下我们的model都是复杂数据，所以推荐使用[useMethods](https://github.com/ecomfe/react-hooks/blob/master/packages/methods/src/immer.ts)。
 
 # useBoolean/useSwitch/useSwitch
 
@@ -155,8 +155,8 @@ export default function App() {
 我们来看看文档中useBoolean的例子直接使用useMethods应该怎么写。
 
 ```javascript
-const useMethods = (modal,reducers)=>{ // 下文如果有用到useMethods，指的都是这个方法
-    const [state,setState] = useImmer(modal)
+const useMethods = (model,reducers)=>{ // 下文如果有用到useMethods，指的都是这个方法
+    const [state,setState] = useImmer(model)
     const methodsRef = useRef()
     if(!methodsRef.current){
         methodsRef.current = Object.keys(reducers).reduce((acc,key)=>{
@@ -398,6 +398,83 @@ export function useOriginalCopy<T>(value: T, equals: CustomEquals<T> = shallowEq
     return equals(cache.current, value) ? cache.current : value; // 思路借鉴了usePreviousValue
 }
 ```
-第二个参数默认是浅比较，可以传deepEquals从来衍生出useOriginalDeepCopy。
+第二个参数默认是浅比较，可以传deepEquals从而衍生出useOriginalDeepCopy。
+
+# useEffectRef
+[文檔](https://ecomfe.github.io/react-hooks/#/hook/effect-ref/use-effect-ref)
+
+举个例子，我们用hooks写网页时，往往需要访问dom，通常会写出这样的代码。
+
+```javascript
+export default ()=>{
+    const eleRef = useRef()
+    useEffect(()=>{
+        if(eleRef.current){
+            //..... main
+        }
+    },[])
+    return (
+        <div ref={eleRef}>test</div>
+    )
+}
+```
+这样写main只会执行一次，无法在rerender时重新操作dom
+```javascript
+export default ()=>{
+    return (
+        <div ref={ref=>{
+            if(ref){
+                //.... main
+            }
+        }}>
+            test
+        </div>
+    )
+}
+```
+但是这样写有个缺点，虽然每次rerender main都会执行，但是我们既然在dom挂载时做了一些副作用，我们就应该在dom卸载时清除这些副作用，有点类似于vue directive。来看源码
+
+```typescript
+export function useEffectRef<E extends HTMLElement = HTMLElement>(callback: RefCallback<E>): EffectRef<E> {
+    const disposeRef = useRef<(() => void)>(noop); // disposeRef用来存放cleanup function
+    const effect = useCallback(
+        (element: E | null) => {
+            disposeRef.current(); // 每次callback变化（rerender）执行 cleanup function
+            // To ensure every dispose function is called only once.
+            disposeRef.current = noop;
+
+            if (element) {
+                const dispose = callback(element); // 安全起见，callback必须返回一个cleanup function
+
+                if (typeof dispose === 'function') {
+                    disposeRef.current = dispose;
+                }
+                // Have an extra type check to work with javascript.
+                else if (dispose !== undefined) {
+                    // eslint-disable-next-line no-console
+                    console.warn('Effect ref callback must return undefined or a dispose function');
+                }
+            }
+        },
+        [callback]
+    );
+
+    return effect;
+}
+```
+所以，我们只需要在代码里面这么写就ok了
+```javascript
+export default ()=>{
+    const refFunc = useEffectRef(ele=>{
+        // main
+    })
+    return (
+        <div ref={refFunc}>
+            test
+        </div>
+    )
+}
+```
+
 
 
