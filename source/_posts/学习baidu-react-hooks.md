@@ -374,7 +374,7 @@ export default () => {
     );
 };
 ```
-我觉得大多数情况下不需要useOriginalCopy，暂时想不出使用场景，以后想到了再补充。来看源码。
+我觉得大多数情况下不需要useOriginalCopy，可能某些情况下，为了避免状态分的太散，或者组件拆的太细，需要维护一些粒度较大的状态，才需要这些封装。来看源码。
 
 ```typescript
 export function useOriginalCopy<T>(value: T, equals: CustomEquals<T> = shallowEquals): T {
@@ -475,6 +475,91 @@ export default ()=>{
     )
 }
 ```
+# useMergedRef
+[文档](https://ecomfe.github.io/react-hooks/#/hook/merged-ref/use-merged-ref)
+
+顾名思义，合并ref。ref要么接收一个useRef，要么接收一个函数，但是往往为了代码的可读性，需要为ref绑定多个操作，这时我们就需要合并多个操作。思路也很简单，不管是useRef还是callback，都用高阶函数包起来，内部挨个执行它们。来看源码。
+
+````typescript
+import {useRef, Ref, RefCallback, MutableRefObject} from 'react';
+import {usePreviousEquals} from '@huse/previous-value';
+
+export type RefLike<T> = Ref<T> | null | undefined;
+
+function arrayShallowEquals<T>(x: Array<RefLike<T>> | undefined, y: Array<RefLike<T>>) {
+    if (x?.length !== y.length) {
+        return false;
+    }
+
+    for (let i = 0; i < x.length; i++) {
+        if (x[i] !== y[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function isCallbackRef<T>(ref: RefLike<T>): ref is RefCallback<T> {
+    return typeof ref === 'function';
+}
+
+function mergeRefs<T>(refs: Array<RefLike<T>>): RefCallback<T> {
+    // 返回一个函数用于ref的值，函数内部遍历refs数组，并且区分是否是函数，然后各自执行操作。
+    return (value: T) => {
+        for (const ref of refs) {
+            if (isCallbackRef(ref)) {
+                ref(value);
+            }
+            else if (ref) {
+                // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31065
+                (ref as MutableRefObject<T>).current = value;
+            }
+        }
+    };
+}
+
+export function useMergedRef<T>(refs: Array<RefLike<T>>): RefCallback<T> {
+    // To allow difference length of `ref` array, we need a loose version of `useCallback`
+    const mergedCallbackRef = useRef<RefCallback<T> | undefined>(); // 由于useMergedRef的返回值仍然是个函数，函数本身的变化通常不引起uirender，所以应当用ref存储它。
+    const areRefsEqual = usePreviousEquals(refs, arrayShallowEquals); // 为了提升性能，浅比对前后refs，如果相等，就读缓存，避免后续不必要的rerender。
+
+    // The `!mergedCallbackRef.current` part is to "cheat" TypeScript.
+    if (!areRefsEqual || !mergedCallbackRef.current) {
+        mergedCallbackRef.current = mergeRefs(refs);
+    }
+
+    return mergedCallbackRef.current;
+}
+````
+#useTransitionState
+[文档](https://ecomfe.github.io/react-hooks/#/hook/transition-state/use-transition-state)
+
+文档上的例子让我想起了toast组件，初看transitionState这个名字，我还以为是动画相关的什么封装。来看源码
+
+[源码](https://github.com/ecomfe/react-hooks/blob/master/packages/transition-state/src/index.ts)
+
+思路很像函数去抖，只不过在最后一个tick又执行了初始操作，即setValue(defaultValue)。看这段代码之前，我自己想了一下，这个需求如果是让我实现，该怎么写，结果我把setTimeout/clearTimeout的逻辑写到了setTransition里，细想一下，像setTimeout这种有副作用的方法还真应该放到useEffect里面。
+
+不过我搞不懂，为啥setTransition 使用useCallback缓存，像这种与ui打交道又希望它不变的函数，不是推荐使用useRef嘛！
+
+#useIntendedLazyValue
+[文档](https://ecomfe.github.io/react-hooks/#/hook/intended-lazy/use-intended-lazy-value)
+
+我猜这个hook的意义在于：有时候我们需要在组件A中获取某个实时变化的值（不是实时获取），由于不是实时获取所以这个值的变化带来的rerender组件A并不需要，所以我们便不能把这个值当做参数传给组件B，好的思路是传个引用稳定的function（就叫getValue），并且保证只在commit阶段调用getValue。
+
+```typescript
+export function useIntendedLazyValue<T>(value: T): () => T {
+    const ref = useRef(value);
+    useImperativeHandle(ref, () => value); // 如果不是为了保证只在commit阶段调用getValue，这一句完全可以换为ref.current = value
+    const stableGet = useRef(() => ref.current);
+    return stableGet.current;
+}
+```
+
+
+
+
 
 
 
