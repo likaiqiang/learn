@@ -591,6 +591,40 @@ function findUpdateCause<T extends Record<string, any>>(previous: T, current: T)
     return causes;
 }
 ```
+#useDocumentEvent 
+```typescript
+export function useDocumentEvent<K extends EventNames>(
+    eventName: K,
+    fn: DocumentEventHandler<K>,
+    options?: boolean | AddEventListenerOptions
+) {
+    const handler = useRef(fn);
+    useLayoutEffect(
+        () => {
+            handler.current = fn;
+        },
+        [fn]
+    );
+    useLayoutEffect(
+        () => {
+            const trigger: DocumentEventHandler<K> = e => handler.current(e);
+            document.addEventListener(eventName, trigger, options);
+            return () => document.removeEventListener(eventName, trigger, options);
+        },
+        [eventName, options]
+    );
+}
+```
+从源码来看，就是document.addEventListener/removeEventListener的hook版，奇怪的是，为啥要在useLayoutEffect里调addEventListener，正常操作，不是都是useEffect？还有为啥要用useLayoutEffect充当watch函数，直接这样不行吗？
+
+```typescript
+const handler = useRef(fn);
+handler.current = fn
+```
+#useDocumentTitle
+看起来挺无聊的一个hook。不过我曾见过一些react写的pc网站，单页面应用，用react-router充当路由，不同的route有不同的document.title。这种场景下这个hook就挺有用的。
+
+
 
 
 
