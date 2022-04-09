@@ -556,6 +556,42 @@ export function useIntendedLazyValue<T>(value: T): () => T {
     return stableGet.current;
 }
 ```
+#useIntendedLazyCallback
+从源码来看，是useIntendedLazyValue的函数版本，即useIntendedLazyValue的参数是一个函数。使用场景倒是挺有用的，即保持一个函数的引用稳定，有点像[useMemoizedFn](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useMemoizedFn/index.ts)
+
+#useRenderTimes
+很简单，略。
+#useChangeTimes
+源码比上一个多几行，通过usePreviousValue比对当前值与上一次的值是否相同，如果不同并且组件已经mounted，计数器加一。debug时挺有用的。
+#useUpdateCause
+[文档](https://ecomfe.github.io/react-hooks/#/hook/debug/use-update-cause)
+
+是上一个的加强版，不仅记录值的变化次数，还记录变化原因。多了个findUpdateCause函数，思路不难。
+```typescript
+function findUpdateCause<T extends Record<string, any>>(previous: T, current: T): UpdateCause[] {
+    const causes = [] as UpdateCause[];
+    const keys = Object.keys(previous);
+
+    for (const key of keys) {
+        const previousValue = previous[key];
+        const currentValue = current[key];
+
+        if (previousValue !== currentValue) {
+            const cause: UpdateCause = {
+                previousValue,
+                currentValue,
+                propName: key,
+                shallowEquals: shallowEquals(previousValue, currentValue),
+                deepEquals: deepEquals(previousValue, currentValue),
+            };
+            causes.push(cause);
+        }
+    }
+
+    return causes;
+}
+```
+
 
 
 
