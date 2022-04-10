@@ -623,10 +623,82 @@ handler.current = fn
 ```
 #useDocumentTitle
 看起来挺无聊的一个hook。不过我曾见过一些react写的pc网站，单页面应用，用react-router充当路由，不同的route有不同的document.title。这种场景下这个hook就挺有用的。
+#useElementResize
+[文档](https://ecomfe.github.io/react-hooks/#/hook/element-size/use-element-resize)
 
+监听一个元素是否resize（大小是否变化），内部使用了[resize-detector](https://github.com/Justineo/resize-detector) ,具体的细节，可以去看resize-detector的源码。
 
+```typescript
+export function useElementResize(callback: (element: HTMLElement) => void): ElementResizeCallback {
+    const update = useCallback(
+        (element: HTMLElement) => {
+            const notifyResize = (element: HTMLElement) => callback(element);
+            addListener(element, notifyResize);
 
+            return () => {
+                removeListener(element, notifyResize);
+            };
+        },
+        [callback]
+    );
+    const ref = useEffectRef(update);
+    
+    // const lazyUpdate = useIntendedLazyCallback(update) 加个“性能桥”是不是好一点
+    // const ref = useEffectRef(lazyUpdate); 
 
+    return ref;
+}
+```
+很好理解，基本上是resize-detector的hook实现。别扭的地方在于返回的ref是个函数，供callback形式ref使用，就像这样：
+```javascript
+const app = ()=>{
+    const ref = useElementResize(ele=>{
+        
+    })
+    return (
+        <div ref={ref} id={'test'}>
+            app
+        </div>
+    )
+}
+```
+不像常规思维 const resize = resizeDetector(document.getElementById('test''))) 那样直观。
+至于文档上说的useElementResize不会在初次mounted时触发，我猜还是与resize-detector的内部实现有关，这个库也是bd的某大神写的，可以看一下内部实现。
+
+#useElementSize
+[文档](https://ecomfe.github.io/react-hooks/#/hook/element-size/use-element-size)
+
+返回一个元素的size（宽高），并且在元素resize时更新size。来看源码。
+
+我发现这类封装倒着理解会比较好。
+
+```typescript
+export function useElementSize(): [ElementResizeCallback, Size | undefined] {
+    const [size, setSize] = useState<Size | undefined>(); 
+    const updateSize = useCallback( // 5. 怎样更新size呢？updateSize内部调用了setSize
+        (element: HTMLElement) => {
+            const size = {
+                width: element.offsetWidth,
+                height: element.offsetHeight,
+            };
+            setSize(size);
+        },
+        []
+    );
+    const resize = useElementResize(updateSize); // 4. 通过调用useElementResize知道元素是否resize
+    const observeElementSize = useCallback( 
+        (element: HTMLElement | null) => {
+            resize(element); // 3. 元素resize时更新宽高
+
+            if (element) {// 2. mounted时记录元素宽高
+                updateSize(element);
+            }
+        },
+        [resize, updateSize]
+    );
+    return [observeElementSize, size]; // 1. observeElementSize用于函数形式的ref，size是存储宽高的状态容器。
+}
+```
 
 
 
