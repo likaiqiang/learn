@@ -251,7 +251,7 @@ const useActionPending = (func)=>{
 ```
 差不多和源码的实现一致，最大的不同在于，调用dec时源码还判断了此时组件是否已经卸载，避免内存泄露。
 
-#useInfiniteScroll
+# useInfiniteScroll
 [文档](https://ecomfe.github.io/react-hooks/#/zh-CN/hook/infinite-scroll/use-infinite-scroll)
 
 使用useMethods封装的无限滚动，需要配合react-infinite-scroll-component来使用,来看源码。
@@ -316,7 +316,7 @@ export function usePreviousValue<T>(value: T): T | undefined {
 ```
 实现的思路也是言简意赅。利用ref缓存value，但是在useEffect执行时才更新ref，所以每次usePreviousValue执行时返回的总是上一次的值。
 
-#useDerivedState
+# useDerivedState
 [文档](https://ecomfe.github.io/react-hooks/#/zh-CN/hook/derived-state/use-derived-state)
 
 文档上说是getDerivedStateFromProps的hook实现，对getDerivedStateFromProps不熟暂不做评价，看源码。
@@ -532,7 +532,7 @@ export function useMergedRef<T>(refs: Array<RefLike<T>>): RefCallback<T> {
     return mergedCallbackRef.current;
 }
 ````
-#useTransitionState
+# useTransitionState
 [文档](https://ecomfe.github.io/react-hooks/#/hook/transition-state/use-transition-state)
 
 文档上的例子让我想起了toast组件，初看transitionState这个名字，我还以为是动画相关的什么封装。来看源码
@@ -543,7 +543,7 @@ export function useMergedRef<T>(refs: Array<RefLike<T>>): RefCallback<T> {
 
 不过我搞不懂，为啥setTransition 使用useCallback缓存，像这种与ui打交道又希望它不变的函数，不是推荐使用useRef嘛！
 
-#useIntendedLazyValue
+# useIntendedLazyValue
 [文档](https://ecomfe.github.io/react-hooks/#/hook/intended-lazy/use-intended-lazy-value)
 
 我猜这个hook的意义在于：有时候我们需要在组件A中获取某个实时变化的值（不是实时获取），由于不是实时获取所以这个值的变化带来的rerender组件A并不需要，所以我们便不能把这个值当做参数传给组件B，好的思路是传个引用稳定的function（就叫getValue），并且保证只在commit阶段调用getValue。
@@ -556,14 +556,14 @@ export function useIntendedLazyValue<T>(value: T): () => T {
     return stableGet.current;
 }
 ```
-#useIntendedLazyCallback
+# useIntendedLazyCallback
 从源码来看，是useIntendedLazyValue的函数版本，即useIntendedLazyValue的参数是一个函数。使用场景倒是挺有用的，即保持一个函数的引用稳定，有点像[useMemoizedFn](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useMemoizedFn/index.ts)
 
-#useRenderTimes
+# useRenderTimes
 很简单，略。
-#useChangeTimes
+# useChangeTimes
 源码比上一个多几行，通过usePreviousValue比对当前值与上一次的值是否相同，如果不同并且组件已经mounted，计数器加一。debug时挺有用的。
-#useUpdateCause
+# useUpdateCause
 [文档](https://ecomfe.github.io/react-hooks/#/hook/debug/use-update-cause)
 
 是上一个的加强版，不仅记录值的变化次数，还记录变化原因。多了个findUpdateCause函数，思路不难。
@@ -591,7 +591,7 @@ function findUpdateCause<T extends Record<string, any>>(previous: T, current: T)
     return causes;
 }
 ```
-#useDocumentEvent 
+# useDocumentEvent 
 ```typescript
 export function useDocumentEvent<K extends EventNames>(
     eventName: K,
@@ -621,9 +621,9 @@ export function useDocumentEvent<K extends EventNames>(
 const handler = useRef(fn);
 handler.current = fn
 ```
-#useDocumentTitle
+# useDocumentTitle
 看起来挺无聊的一个hook。不过我曾见过一些react写的pc网站，单页面应用，用react-router充当路由，不同的route有不同的document.title。这种场景下这个hook就挺有用的。
-#useElementResize
+# useElementResize
 [文档](https://ecomfe.github.io/react-hooks/#/hook/element-size/use-element-resize)
 
 监听一个元素是否resize（大小是否变化），内部使用了[resize-detector](https://github.com/Justineo/resize-detector) ,具体的细节，可以去看resize-detector的源码。
@@ -665,7 +665,7 @@ const app = ()=>{
 不像常规思维 const resize = resizeDetector(document.getElementById('test''))) 那样直观。
 至于文档上说的useElementResize不会在初次mounted时触发，我猜还是与resize-detector的内部实现有关，这个库也是bd的某大神写的，可以看一下内部实现。
 
-#useElementSize
+# useElementSize
 [文档](https://ecomfe.github.io/react-hooks/#/hook/element-size/use-element-size)
 
 返回一个元素的size（宽高），并且在元素resize时更新size。来看源码。
