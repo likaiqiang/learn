@@ -699,9 +699,139 @@ export function useElementSize(): [ElementResizeCallback, Size | undefined] {
     return [observeElementSize, size]; // 1. observeElementSize用于函数形式的ref，size是存储宽高的状态容器。
 }
 ```
+# useScript
+[文档](https://ecomfe.github.io/react-hooks/#/hook/script/use-script)
+平平无奇的一个封装，可能某些业务场景确实能用到，核心是利用document.createElement('script')与document.head.appendChild(script)这种直接操作dom的方式加载某些js，并且缓存了加载结果。代码挺简单的，有兴趣可以去看源码，这里略过。
+# useScriptSuspense
+useScript的Suspense版本，这就有意思了。可以看到，不管是源码还是实例都没有用到React.lazy，源码里面有一处非常奇怪。
+```typescript
+export function useScriptSuspense(src?: string): boolean {
+    if (!src) {
+        return true;
+    }
 
+    const result = CACHE[src];
 
+    if (typeof result === 'boolean') {
+        return result;
+    }
 
+    throw loadScript(src); //loadScript的返回值是个promise，直接往上抛一个promise类型的error，这个error会被react捕获到，从而触发Suspense机制。而React.lazy也会return一个promise，如果把这个promise当做合法的jsx来解析，react会往上抛错，从而触发Suspense机制。好神奇的写法，竟然不需要React.lazy触发了Suspense机制。
+}
+```
+# useDebouncedEffect
+[文档](https://ecomfe.github.io/react-hooks/#/hook/debounce/use-debounced-effect)
+和函数去抖有点语义上的不一样，这个叫做effect去抖，在语义上可能是useEffect的debounce版本。来看源码(可以先忽略immediate相关的逻辑)。
 
+忽略掉immediate的代码长这样。
+```typescript
+useEffect(
+    () => {
+        if (wait <= 0) {
+            return;
+        }
+        cleanUpRef.current();
+        cleanUpRef.current = noop;
 
+        const callback = callbackRef.current;
+        const trigger = () => { //3. 执行callback，并且callback可以返回一个函数来执行额外的清理工作
+            const cleanUp = callback();
 
+            if (typeof cleanUp === 'function') {
+                cleanUpRef.current = cleanUp;
+            }
+            else if (cleanUp !== undefined) {
+                // eslint-disable-next-line no-console
+                console.warn('useDebouncedEffect callback should return undefined or a clean-up function');
+            }
+        };
+
+        const cleanUp = tick => {
+            clearTimeout(tick);
+            cleanUpRef.current();
+            cleanUpRef.current = noop;
+        };
+        const tick = setTimeout(trigger, wait); // 1. 每次useEffect都会起一个定时器，延时执行trigger,同时结束掉上一个
+        return () => cleanUp(tick); // 2. 结束掉上一个Timeout，并且执行清理工作
+
+        // if (immediate && cleanUpRef.current === noop) {
+        //     trigger();
+        //     cleanUpRef.current = trigger;
+
+        //     const tick = setTimeout(() => (cleanUpRef.current = noop), wait);
+        //     return () => cleanUp(tick);
+        // }
+        // else {
+        //     const tick = setTimeout(trigger, wait);
+        //     return () => cleanUp(tick);
+        // }
+    },
+    [dependency, wait]
+);
+```
+我们再来看这个immediate，immediate的需求来自这个[pr](https://github.com/ecomfe/react-hooks/issues/76)，我们把去抖分为两种，即先去抖后执行，和先执行后去抖。举个例子，假如我们的wait是1s，然后我们连续点击某个按钮（间隔时间小于1s），如果是先去抖，则callback会在最后一次点击的wait秒后执行，如果是先执行，则callback会立即执行，后续间隔小于wait的点击不再响应，而immediate则属于后者。
+
+但是据我观察（调试运行），源码中关于immediate的部分是有问题的，根本不是先执行后去抖的效果，像是wait=0的效果，为什么会这样？每次dependency变化执行useEffect，会先执行cleanup，所以说immediate && cleanUpRef.current === noop一直都是true。
+
+应该写成这样
+
+```typescript
+export function useDebouncedEffect<T>(
+  callback: () => void | (() => void),
+  dependency: T,
+  wait: number,
+  option: DebounceOption = {}
+): void {
+  const callbackRef = useRef(callback);
+  const cleanUpRef = useRef(noop);
+  const { immediate } = option;
+  const immFlagRef = useRef(false); //add
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+  useEffect(() => {
+    if (wait <= 0) {
+      return;
+    }
+
+    cleanUpRef.current();
+    cleanUpRef.current = noop;
+
+    const callback = callbackRef.current;
+    const trigger = () => {
+      const cleanUp = callback();
+
+      if (typeof cleanUp === "function") {
+        cleanUpRef.current = cleanUp;
+      } else if (cleanUp !== undefined) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          "useDebouncedEffect callback should return undefined or a clean-up function"
+        );
+      }
+    };
+
+    const cleanUp = (tick) => {
+      if (!immediate) { // update
+        clearTimeout(tick);
+      }
+      cleanUpRef.current();
+      cleanUpRef.current = noop;
+    };
+    let tick: number; //add
+
+    if (immediate && !immFlagRef.current && dependency) { //update
+      trigger();
+      immFlagRef.current = true; //add
+      tick = setTimeout(() => (immFlagRef.current = false), wait); //update
+    } else {
+      if (!immediate) {// update
+        tick = setTimeout(trigger, wait);
+      }
+    }
+    return () => cleanUp(tick); //update
+  }, [dependency, wait, immediate]);
+}
+```
+这样就可以了。用一个immFlagRef保存immediate抖动的状态，然后在cleanup中也不清理定时器。
