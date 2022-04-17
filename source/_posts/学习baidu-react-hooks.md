@@ -835,3 +835,82 @@ export function useDebouncedEffect<T>(
 }
 ```
 这样就可以了。用一个immFlagRef保存immediate抖动的状态，然后在cleanup中也不清理定时器。
+# useDebouncedValue
+useDebouncedEffect的语法糖，略。
+# useDebouncedCallback
+[文档](https://ecomfe.github.io/react-hooks/#/hook/debounce/use-debounced-callback)
+用debounce这个库实现的去抖，与useDebouncedEffect使用场景上有所不同。看一下useDebouncedEffect文档上的例子用useDebouncedCallback怎么写。
+```tsx
+export default () => {
+  const [message, setMessage] = useState("");
+  
+    const debounceFunc = (e) => {
+        console.log("change");
+        setMessage(e.target.value);
+    };
+
+  return (
+    <>
+      <div>
+        <Input placeholder="input something..." onChange={debounce(debounceFunc, 1000)} />
+      </div>
+      <div style={{ marginTop: 20, color: "red" }}>{message}</div>
+    </>
+  );
+};
+```
+看起来这个更简洁，但是细心的你可能已经发现，这个例子没有value/setValue相关的逻辑，为什么不写呢？因为如果在Input的onChange里面实时的setValue，会导致组件rerender，而useDebouncedCallback内部并没有把callback当成ref缓存起来，而是使用了useMemo，一旦组件render，callback变化，接着debouncedCallback变化，整个debounce会重新初始化。需要这么改
+```typescript
+export function useDebouncedCallback<C extends (...args: any) => any>(
+    callback: C,
+    wait: number,
+    option: DebounceOption = {}
+): C {
+    const callbackRef = useRef(callback); //add
+    callbackRef.current = callback; //add
+
+    const { immediate } = option;
+    const debouncedCallback = useMemo(
+        () =>
+            wait > 0 ? debounce(callbackRef.current, wait, immediate) : callback, //update
+        [wait, immediate] //update
+    );
+    useEffect(() => {
+        return () => {
+            const callback = debouncedCallback as any;
+            callback.clear && callback.clear();
+        };
+    }, [debouncedCallback]);
+
+    return debouncedCallback;
+```
+```typescript jsx
+export default () => {
+  const [value, setValue] = useState("");
+  const [message, setMessage] = useState("");
+
+  const onChange = useDebouncedCallback((e) => {
+    console.log("change");
+    setMessage(e.target.value);
+  }, 1000);
+
+  console.log("render");
+
+  return (
+    <>
+      <div>
+        <Input
+          placeholder="input something..."
+          value={value} // update
+          onChange={(e) => { //update
+            setValue(e.target.value);
+            onChange(e);
+          }}
+        />
+      </div>
+      <div style={{ marginTop: 20, color: "red" }}>{message}</div>
+    </>
+  );
+};
+```
+这样一来，immediate参数也好使了。使用原先的源码运行demo，immediate参数是不能用的，症状和useDebouncedEffect一样。
