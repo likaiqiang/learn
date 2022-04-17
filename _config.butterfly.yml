@@ -7,8 +7,8 @@
 #   name: link || icon
 
 menu:
-# Home: / || fas fa-home
-# Archives: /archives/ || fas fa-archive
+ HOME: / || fas fa-home
+ GIST: /2022/04/16/一些经验片段/ || fas fa-archive
 # Tags: /tags/ || fas fa-tags
 # Categories: /categories/ || fas fa-folder-open
 # List||fas fa-list:
