@@ -914,3 +914,116 @@ export default () => {
 };
 ```
 这样一来，immediate参数也好使了。使用原先的源码运行demo，immediate参数是不能用的，症状和useDebouncedEffect一样。
+#useTimeout
+#useInterval
+这俩货不必多说，分别是用hook思维封装的setTimeout与setInterVal,不过源码中有一处令人奇怪。
+```typescript jsx
+const fn = useRef(callback);
+useEffect(
+    () => {
+        fn.current = callback;
+    },
+    [callback]
+);
+```
+使用useRef缓存fn无可厚非，但是为啥不写成这样
+```typescript jsx
+const fn = useRef(callback);
+fn.current = callback;
+```
+反正ref的变化不会引起rerender，多执行几次又有什么关系。
+#useStableInterval
+[文档](https://ecomfe.github.io/react-hooks/#/hook/timeout/use-stable-interval)
+
+好简的文档，useStableInterval的这个名字也不能直接看出这个封装是干嘛的。
+
+原生的setInterval只能定时执行一个同步任务，假设我们要定时执行某个异步任务，这个hook便派上用场了。举个例子
+```typescript jsx
+import {useState,useLayoutEffect,useRef} from 'react'
+
+import {useStableInterval} from './hooks'
+
+export default function App() {
+  const [count,setCount] = useState(0)
+  const [done,setDone] = useState(false)
+  useStableInterval(()=>{
+    if(count < 10){
+      return new Promise((resolve,reject)=>{
+        setTimeout(()=>{
+          setCount(count + 1)
+          resolve(undefined)
+        },2000)
+      })
+    }
+    else {
+      setDone(true)
+    }
+  },1000)
+  return (
+    <>
+      <div>{count}</div>
+      {
+        done ? <div>done</div> : null
+      }
+    </>
+  )
+}
+```
+每隔1秒去执行耗时2秒的异步任务，直到count === 10。知道了该hook的作用，然后去看源码:smile:
+
+源码里面有个running，是为了处理某些边界问题，先忽略。
+```typescript jsx
+export function useStableInterval(callback: (() => any) | undefined, time: number): void {
+    const fn = useRef(callback);
+    useEffect(
+        () => {
+            fn.current = callback;
+        },
+        [callback]
+    ); //前两句不说了，用ref缓存callback
+    useEffect(
+        () => {
+            if (time < 0) {
+                return;
+            }
+
+            // To get rid of type checking on Node's `setTimeout` function
+            let tick: any = null;
+            // let running = true;
+            const trigger = () => {
+                const next = () => {
+                    // It is possible that when `clearTimeout` is happening an async callback is in pending state,
+                    // then when this callback resolves it will continue to start a new timer,
+                    // therefore we need a `running` flag to indicate whether a future timer is able to start.
+                    // if (running) {
+                    //     tick = setTimeout(trigger, time);
+                    // }
+                    tick = setTimeout(trigger, time); // 4.再次执行1、2、3
+                };
+
+                if (!fn.current) {
+                    next();
+                    return;
+                }
+
+                const returnValue = fn.current(); // 2.执行callback
+                if (typeof returnValue?.then === 'function') {
+                    returnValue.then(next, next); // 3. 如果returnValue是promise，执行promise，并在promise返回以后执行next
+                }
+                else {
+                    next();
+                }
+            };
+            tick = setTimeout(trigger, time); // 1.setTimeout去执行trigger
+
+            return () => {
+                // running = false;
+                clearTimeout(tick);
+            };
+        },
+        [time]
+    );
+}
+```
+再来看那个running是干嘛的，第二个useEffect的依赖只有个time，当time变化时，清除上一个tick，并重新执行定时器，这时候很可能出现上一个promise正在pending，这个不该出现的promise一旦resolve就会执行next，所以为了阻止这种情况发生，加了个running flag。
+
