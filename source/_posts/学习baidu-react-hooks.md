@@ -1026,4 +1026,101 @@ export function useStableInterval(callback: (() => any) | undefined, time: numbe
 }
 ```
 再来看那个running是干嘛的，第二个useEffect的依赖只有个time，当time变化时，清除上一个tick，并重新执行定时器，这时候很可能出现上一个promise正在pending，这个不该出现的promise一旦resolve就会执行next，所以为了阻止这种情况发生，加了个running flag。
+# useScrollIntoView
+[文档](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView)
+
+看起来是[scrollIntoView](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView) 的hook实现。想一下什么时候会用到scrollIntoView，我能想到的有两只情况。一种是由某个动作触发scrollIntoView（比如说click事件），一种是组件mounted时触发scrollIntoView。对于前一种，这样写就可以了
+```typescript jsx
+const app = ()=>{
+    const onClick = useRef(()=>{
+        eleRef.current.scrollIntoView()
+    }).current
+    const eleRef = useRef()
+    return (
+        <div>
+            <div ref={eleRef}>asas</div>
+            <button onClick={onClick}>scrollIntoView</button>
+        </div>
+    )
+}
+```
+对于后一种可以这样写
+```typescript jsx
+const app = ()=>{
+    const eleRef = useRef()
+    useEffect(()=>{
+        eleRef.current.scrollIntoView()
+    },[])
+    return (
+        <div ref={eleRef}>xwcwc</div>
+    )
+}
+```
+然后再回过头来看useScrollIntoView，这个封装适用上述两种情况。第一种情况可以这样写
+```typescript jsx
+const app = ()=>{
+    const [active,changeActive] = useState(false)
+    const eleRef = useRef()
+    useScrollIntoView(ref,active)
+    
+    return (
+        <div>
+            <div ref={eleRef}>asas</div>
+            <button onClick={()=>{
+                changeActive(true)
+            }}>scrollIntoView</button>
+        </div>
+    )
+}
+```
+第二种情况
+```typescript jsx
+const app = ()=>{
+    const eleRef = useRef()
+    useScrollIntoView(ref,true)
+    return (
+        <div>
+            <div ref={eleRef}>asas</div>
+        </div>
+    )
+}
+```
+源码就不赘述了，比较简单。
+# useScrollLock
+[文档](https://ecomfe.github.io/react-hooks/#/hook/scroll-lock/use-scroll-lock)
+
+某些场景下需要禁止页面滚动，比如打开某个modal。实现思路也很简单，useEffect执行时设置body的overflow为hidden，并且记录原始的overflow（用于清除副作用）。其实仅仅设置body的overflow为hidden在某些手机上是不生效的，比如[张鑫旭](https://www.zhangxinxu.com/wordpress/2016/12/web-mobile-scroll-prevent-window-js-css/) 的这篇文章。如果不考虑Safari浏览器可以这样实现。
+```typescript jsx
+export function useScrollLock(lock: boolean): void {
+    // const previousOverflowRef = useRef('');
+    useEffect(
+        () => {
+            if (!lock) {
+                return;
+            }
+
+            /* istanbul ignore next */
+            if (typeof document === 'undefined') {
+                return;
+            }
+
+            // previousOverflowRef.current = document.body.style.overflow; 
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'relative'
+            document.documentElement.style.overflow = 'hidden'
+
+            return () => {
+                // Do not reset if other scripts modify style.
+                if (document.body.style.overflow === 'hidden') {
+                    document.body.style.overflow = ''
+                    document.body.style.position = ''
+                    document.documentElement.style.overflow = ''
+                }
+            };
+        },
+        [lock]
+    );
+}
+```
+
 
