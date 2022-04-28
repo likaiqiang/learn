@@ -1258,6 +1258,32 @@ else if (payload === rangeEnd) { //如果本次按住shift点击对应的索引�
 }
 ```
 
+第三种情况
+
+交互图
+
+![4e096b8a-1e72-43a0-9633-881bac807694-动画2.gif](https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/4e096b8a-1e72-43a0-9633-881bac807694-动画2.gif)
+
+适用于已经按住shift选中一片区域，再次按shift的场景
+
+代码
+```typescript
+const currentRange = range(
+    Math.min(rangeStart, rangeEnd),
+    Math.max(rangeStart, rangeEnd) + 1
+); //这里的currentRange从交互上来看，应该是上一次选中的范围
+const nextRange = range(
+    Math.min(rangeStart, payload),
+    Math.max(rangeStart, payload) + 1
+);// 从交互上来说，应该是本次选中的范围
+const nextSelected = union(difference(selected, currentRange), nextRange); // 两者先取差集再取并集，得到的结果就是最后的范围。不过从我实际操作来看，大多数情况下，nextSelected与nextRange是相等的。
+return {
+    rangeStart,
+    rangeEnd: payload,
+    selected: nextSelected,
+};
+```
+
 
 
 
