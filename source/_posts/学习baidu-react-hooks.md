@@ -914,8 +914,8 @@ export default () => {
 };
 ```
 这样一来，immediate参数也好使了。使用原先的源码运行demo，immediate参数是不能用的，症状和useDebouncedEffect一样。
-#useTimeout
-#useInterval
+
+# useTimeout useInterval
 这俩货不必多说，分别是用hook思维封装的setTimeout与setInterVal,不过源码中有一处令人奇怪。
 ```typescript jsx
 const fn = useRef(callback);
@@ -1122,5 +1122,142 @@ export function useScrollLock(lock: boolean): void {
     );
 }
 ```
+# useScrollPosition
+[文档](https://ecomfe.github.io/react-hooks/#/hook/scroll-position/use-scroll-position)
+实时记录某个元素或者窗口的滚动位置。看起来挺无聊的一个封装，来看源码有没有值得学习的地方。
+```typescript
+export function useScrollPosition(target?: Target): ScrollPosition {
+    const rafTick = useRef(0);
+    const [position, setPosition] = useState(INITIAL_POSITION);
+    useEffect(
+        () => {
+            if (target === null) {
+                return;
+            }
+            const targetNode = getTargetNode(target); //1. target要么是element类型的元素，要么为空，如果是空，target为document
+            const targetElement = targetNode === document ? document.documentElement : targetNode as HTMLElement; //2. 根据target获取targetElement
+            setPosition(getScrollPosition(targetElement)); // 3.记录初始position
+
+            const syncScroll = () => { // 5.这个方法很奇怪，它并没有实时的setPosition，而是用requestAnimationFrame中转了一下，这样做可以保证在一帧的时间内只执行一次setPosition，提高性能。
+                if (rafTick.current) {
+                    return;
+                }
+
+                const callback = () => {
+                    setPosition(getScrollPosition(targetElement));
+                    rafTick.current = 0;
+                };
+                rafTick.current = requestAnimationFrame(callback);
+            };
+
+            targetNode.addEventListener('scroll', syncScroll, EVENT_OPTIONS); // 4.监听滚动事件，执行syncScroll方法
+
+            return () => {
+                targetNode.removeEventListener('scroll', syncScroll, EVENT_OPTIONS);
+                cancelAnimationFrame(rafTick.current);
+            };
+        },
+        [target]
+    );
+
+    return position;
+}
+```
+# useScrollTop
+# useScrollLeft
+这俩内部都调用了useScrollPosition，略。
+# useSelection
+[文档](https://ecomfe.github.io/react-hooks/#/hook/selection/use-selection)
+看起来（看示例）挺复杂的一个实现，实际上没那么复杂。先看示例代码。
+```typescript
+//...
+const [selection, {selectIndex}] = useSelection([], {multiple: true, range: true});
+// selection是一个表示范围的数组，数组的每一项为dataSource的下标，selectIndex是个函数，调用selectIndex可以影响selection的值，感觉useSelection也可以用useMethods实现
+//...
+const renderItem = (item, i) => {
+    return (
+        <li key={item.id}
+            className='text-style'
+            style={{ backgroundColor: selection.includes(i) ? '#e6f7ff' : undefined }}
+            onClick={e => selectIndex(i, e)}> // 这里，点击的时候，selectIndex内部会判断各种点击（是否同时按了ctrl/shift），是否是初次点击，以及该行数据的下标，从而输出符合交互正确的selection。也就是说useSelection只输出下标数组，不管dom的样式或者行为。
+            {item.text}
+        </li>
+    );
+};
+return (
+    <ul style={{listStyle: 'none', margin: 0, padding: 0}}>
+        {dataSource.map(renderItem)}
+    </ul>
+);
+```
+[源码](https://github.com/ecomfe/react-hooks/blob/master/packages/selection/src/index.ts) 看起来有点小长，实际上分为两部分：
+
+1. 使用useReducer封装的记录每次点击各项数据的状态集。总共分三种点击，普通的单点、是否按了Ctrl或者shift。每种情况生成不同的selected
+2. selectIndex，selectIndex内部调用getActionType通过event与options，来判断该执行哪种点击的逻辑。
+
+```typescript
+const getActionType = (e?: ClickContext, options: SelectionOptions = DEFAULT_OPTIONS): Action['type'] => {
+    if (!e) {
+        return 'single';
+    }
+    if (e.shiftKey) {
+        return options.range ? 'range' : 'single';
+    }
+    if (e.metaKey || e.ctrlKey) {
+        return options.multiple ? 'multiple' : 'single';
+    }
+    return 'single';
+};
+```
+一目了然，结果分三种情况，range、multiple、single，与useReducer里面的三种点击一一对应。
+
+先看比较简单的两种点击，单点与按住Ctrl点，对应代码如下
+
+```typescript
+const toggleSingleSelected = (selected: number[], target: number): number[] => { // 按住ctrl点击列表在交互上通常是多选行为
+    if (selected.includes(target)) {// 如果点击元素的索引已经在selected里了，从selected里面去除，也就是反选效果。
+        return without(selected, target);
+    }
+    return selected.concat(target); // 如果点击元素的索引没有在selected里，加到selected里面，也就是选中效果
+};
+//...
+const nextSelected = type === 'single' ? [payload] : toggleSingleSelected(selected, payload); // 如果是单点，返回该条数据索引，否则（按住ctrl）执行toggleSingleSelected
+return {
+    rangeStart: payload,
+    rangeEnd: undefined,
+    selected: nextSelected,
+};
+//...
+```
+
+再来看按住shift选中一列数据的逻辑，这种交互比较复杂，从代码分支来看，也分为三种情况。
+
+第一种情况
+
+```typescript
+if (rangeEnd === undefined) { // 什么情况下rangeEnd === undefined，上一次点击行为为普通的单点时 rangeEnd === undefined，而这一次再按住shift点别的行，就会走这里的代码
+    const extra = payload < rangeStart // range的文档建议去查lodash，简单说range的作用会根据传入的两个数字参数，生成一个范围数组。
+        ? range(payload, rangeStart + 1)
+        : range(rangeStart, payload + 1);
+    return {
+        rangeStart,
+        rangeEnd: payload,
+        selected: union(selected, extra),
+    };
+}
+```
+对应的交互
+
+![shift_1.gif](https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/shift_1.gif)
+
+第二种情况
+
+```typescript
+else if (payload === rangeEnd) { //如果本次按住shift点击对应的索引和上次一样，则返回上次的state
+    return state;
+}
+```
+
+
 
 
