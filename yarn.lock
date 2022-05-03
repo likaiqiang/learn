@@ -1717,7 +1717,7 @@ chalk@^2.0.0, chalk@^2.4.2:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-chalk@^4.0.0:
+chalk@^4.0.0, chalk@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
   integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
@@ -3361,6 +3361,13 @@ hexo-generator-tag@^1.0.0:
   dependencies:
     hexo-pagination "1.0.0"
 
+hexo-hide-posts@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/hexo-hide-posts/-/hexo-hide-posts-0.2.0.tgz#3f28940243ed406e9a82f01831176eabefb57c2e"
+  integrity sha512-euTftMGCSYkhn/ARVuOv+XQIMNTUy5vCiutaY0qcN92NdZTfPG/wKCkeR3yE7LpMs/Y0aTuEp9F5NUVP/Dt6nA==
+  dependencies:
+    chalk "^4.1.2"
+
 hexo-i18n@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/hexo-i18n/-/hexo-i18n-1.0.0.tgz#7983fb3a313e90615b84dd8fa946a71c489ef5bd"
@@ -3447,10 +3454,10 @@ hexo-server@^3.0.0:
     picocolors "^1.0.0"
     serve-static "^1.14.1"
 
-hexo-theme-butterfly@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/hexo-theme-butterfly/-/hexo-theme-butterfly-4.1.0.tgz#34514e105dcfe4e771816ace1e4048185767c1dd"
-  integrity sha512-wNylZ2A3Wy0jcbrvewNn/0+zZ+cWcncM75LOwHSLxSa1T8wKvuLKF9tku7jqp6SKekrLN2q06TSy3oaa/LQgyw==
+hexo-theme-butterfly@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/hexo-theme-butterfly/-/hexo-theme-butterfly-4.2.0.tgz#321aeb83a554bc545f583becfc9bfc0be3e35147"
+  integrity sha512-Vd7PU1fNkYHTtSG+/XGhFTgK7MEm5Zn2axjn9JF8Gcy083DIzbXctrKcnYsCQQi5IYe65APXUeuPFxwbQn+LCQ==
   dependencies:
     hexo-renderer-pug "^3.0.0"
     hexo-renderer-stylus "^2.0.1"
@@ -3474,7 +3481,7 @@ hexo-util@^2.0.0, hexo-util@^2.5.0, hexo-util@^2.6.0:
     prismjs "^1.17.1"
     strip-indent "^3.0.0"
 
-hexo@^6.1.0:
+hexo@^6.0.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/hexo/-/hexo-6.1.0.tgz#627d44997172235f22de13e05786281753fa2fe6"
   integrity sha512-TeV2cN61CD2C1GKczJRR3tdZhR3JUQi8wtS4eIgkDOeDYWTmovPoSCcc8jvh42D3fehOPp6E81fTeyjh39QWtA==
