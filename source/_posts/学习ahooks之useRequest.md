@@ -501,6 +501,35 @@ function useMemoizedFn<T extends noop>(fn: T) {
 ```
 useMemoizedFn本质上是个高阶函数。有两个useRef，一个存储变化的fn，一个存储永远不变的memoizedFn，调用useMemoizedFn时真正调用的是memoizedFn，然后在memoizedFn内部调用最新的fn。高阶函数的思路。
 
+PS: 这里有个想法，useCallback为啥会有这么多的问题，是不是我们用错了呢？react hooks的设计初衷是使函数式组件拥有状态，那我们要是能保证被useCallback缓存的函数都是纯函数，是不是就不存在闭包问题。假如上面的例子写成这样：
+
+```typescript jsx
+export default () => {
+  const [count, setCount] = useState(0);
+  const onClickHandler = useCallback((count)=>{
+    setCount(count + 1)
+  },[])
+
+  return (
+    <>
+      <p>{count}</p>
+      <button onClick={()=>{
+          onClickHandler(count)
+      }}>add count</button>
+      <Child func={onClickHandler}/>
+    </>
+  );
+};
+
+
+const Child = React.memo((props)=>{
+  console.log('child render')
+  return (
+    <div>我是child</div>
+  )
+})
+```
+这样写是不是也不存在闭包问题。
 ### useCreation
 [useCreation](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useCreation/index.ts)
 [文档](https://ahooks.js.org/zh-CN/hooks/use-creation)
