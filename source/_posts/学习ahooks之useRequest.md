@@ -530,6 +530,16 @@ const Child = React.memo((props)=>{
 })
 ```
 这样写是不是也不存在闭包问题。
+
+2022.08.02更新，上面的写法还是有问题，虽然解决了函数的引用问题，但却大大增加了心智负担，假如某个方法有好几个依赖，并且有好几处调用，每次调用都要传大一堆“看似无用“的参数，这样就不如在定义函数时“标明”依赖方便。
+```typescript
+const foo = useCallback((a,b,c,d,e)=>{
+    
+},[])
+foo(a,b,c,d,e)
+//这样每次调用foo，都必须传a、b、c、d、e。这样倒不如定义foo时只写一遍依赖方便，但这样又会带来函数地址问题，所以还是需要useMemoizedFn，或者关注一下react新的hooks，useEvent
+```
+
 ### useCreation
 [useCreation](https://github.com/alibaba/hooks/blob/master/packages/hooks/src/useCreation/index.ts)
 [文档](https://ahooks.js.org/zh-CN/hooks/use-creation)
