@@ -71,7 +71,7 @@ netsh winhttp set proxy http://127.0.0.1:7890
 
 也是报了一个[错](https://stackoverflow.com/questions/65272764/ports-are-not-available-listen-tcp-0-0-0-0-50070-bind-an-attempt-was-made-to) 。
 
-经过后来的实践，我们先启动raidriver，然后再启动docker，是直接可以连上的。第一次我们按教程上的步骤，顺序反而是反的。
+经过后来的实践，我发现先启动raidriver，然后再启动docker，是直接可以连上的。第一次按教程上的步骤，顺序反而是反的。
 
 
 
