@@ -69,7 +69,13 @@ netsh winhttp set proxy http://127.0.0.1:7890
 
 这一步也搞得我快要放弃了，网上找了各种办法都没用，最后还是重启大法好，不过重启的是docker的container，也就是这一步在重启的过程中出问题了，解决了这一问题，上一步奇迹般的连接上了。
 
-也是报了一个[错](https://stackoverflow.com/questions/65272764/ports-are-not-available-listen-tcp-0-0-0-0-50070-bind-an-attempt-was-made-to) 。
+[参考](https://stackoverflow.com/questions/65272764/ports-are-not-available-listen-tcp-0-0-0-0-50070-bind-an-attempt-was-made-to) 
+
+```powershell
+net stop winnat
+docker start container_name
+net start winnat
+```
 
 经过后来的实践，我发现先启动raidriver，然后再启动docker，是直接可以连上的。第一次按教程上的步骤，顺序反而是反的。
 
