@@ -45,6 +45,8 @@ netsh winhttp set proxy http://127.0.0.1:7890
 
 按照链接里面的步骤搞完后，docker果然跑起来了。
 
+其实也可以升级windows版本，我原先是家庭版，升级到pro，docker也跑起来了。
+
 ## 第三处
 
 ![07339a99-030b-4140-b899-366904904ea7-image.png](https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/07339a99-030b-4140-b899-366904904ea7-image.png)
