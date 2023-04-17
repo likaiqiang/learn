@@ -703,7 +703,7 @@ export function useElementSize(): [ElementResizeCallback, Size | undefined] {
 [文档](https://ecomfe.github.io/react-hooks/#/hook/script/use-script)
 平平无奇的一个封装，可能某些业务场景确实能用到，核心是利用document.createElement('script')与document.head.appendChild(script)这种直接操作dom的方式加载某些js，并且缓存了加载结果。代码挺简单的，有兴趣可以去看源码，这里略过。
 # useScriptSuspense
-useScript的Suspense版本，这就有意思了。可以看到，不管是源码还是实例都没有用到React.lazy，源码里面有一处非常奇怪。
+useScript的Suspense版本。
 ```typescript
 export function useScriptSuspense(src?: string): boolean {
     if (!src) {
@@ -712,13 +712,18 @@ export function useScriptSuspense(src?: string): boolean {
 
     const result = CACHE[src];
 
-    if (typeof result === 'boolean') {
+    if (typeof result === 'boolean') { //标记1
         return result;
     }
 
-    throw loadScript(src); //loadScript的返回值是个promise，直接往上抛一个promise类型的error，这个error会被react捕获到，从而触发Suspense机制。而React.lazy也会return一个promise，如果把这个promise当做合法的jsx来解析，react会往上抛错，从而触发Suspense机制。好神奇的写法，竟然不需要React.lazy触发了Suspense机制。
+    throw loadScript(src); // 标记2
 }
 ```
+先说一下react Suspense组件的原理，当Suspense组件的子组件throw一个promise时，这个错误会被Suspense组件捕获，从而中断子组件的渲染，降级渲染Suspense组件的fallback，等这个promise resolve了，Suspense组件会重新render子组件，这时子组件需要return出正确的内容，不然会不停的触发Suspense机制。
+
+Suspense机制并不强制使用React.lazy，相反React.lazy只是一个Suspense机制下的工具方法。上面的useScriptSuspense核心代码仅仅是从标记1到标记2那三行。
+
+首先loadScript会返回一个promise，当这个promise resolve后，loadScript会在CACHE里面缓存这个资源。代码一目了然，首先看缓存里有没有该资源，有则返回，没有则加载（触发Suspense），当promise resolve会再次render，这时缓存里已经有了该资源，可以提前return，Suspense结束。
 # useDebouncedEffect
 [文档](https://ecomfe.github.io/react-hooks/#/hook/debounce/use-debounced-effect)
 和函数去抖有点语义上的不一样，这个叫做effect去抖，在语义上可能是useEffect的debounce版本。来看源码(可以先忽略immediate相关的逻辑)。
