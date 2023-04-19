@@ -248,3 +248,4 @@ function App() {
 对比这两个例子你会发现，react把捕获错误这个行为分为有副作用的捕获与无副作用的捕获，像在render函数里面发生的错误，render函数处于render阶段，react肯定不希望开发者访问this，所以理所当然的只有getDerivedStateFromError响应，而在componentDidUpdate里面抛的错，由于已经处于commit阶段，开发者想干什么react不会去干预，这时的捕获错误的行为可能是纯的也可能是不纯的，所以两个函数都会响应。
 
 ## Suspense
+## hooks
