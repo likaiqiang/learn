@@ -249,3 +249,23 @@ function App() {
 
 ## Suspense
 ## hooks
+这里不一一介绍每个hook，只是说明为什么会推出hooks，以及render与commit阶段都有哪些hook。
+
+### 为什么推出hooks
+1. 首先react16以后由于引入了可中断更新，在render阶段访问this将变得不安全，除了上面的两种改造外，完全杜绝this也是一种方案，所以react更推崇使用函数式组件。
+2. react hooks在逻辑复用方面是一把利器，它可能很容易的把逻辑与渲染分开，为什么要分开，简而言之，渲染（ui）是很难抽象与复用的，而逻辑恰恰相反。
+
+### render阶段的hooks
+useState、useMemo、useCallback、useRef、useContext、useReducer、useEffect、useLayoutEffect
+
+其中useEffect、useLayoutEffect这俩允许执行副作用的hook也是在render阶段执行的。你可能会疑惑，render阶段不是不让执行副作用操作嘛，这俩虽然在render阶段执行，但是它们的回调函数不在render阶段执行。
+
+### commit阶段的hooks
+
+useLayoutEffect。这个hook会在dom更新完毕，但是浏览器还没有来得及绘制之前同步执行。这句话是什么意思呢，我们知道javascript只是用来操作dom，像setState之类操作或者我们手动操作dom只是改变了内存里一颗dom树上的某些节点，真正把dom树绘制成屏幕上形形色色的画面是浏览器完成的，假设我们浏览器一秒绘制60帧，那绘制一帧的时间就是16ms，而javascript是单线程语言，执行js代码与ui绘制是互斥的，所以如果我们在16ms内用10ms的时间来更新dom树，那么还剩6ms用来执行useLayoutEffect。
+
+所以这个hook内部适合执行一些短小精悍的代码，假如执行时间超过6ms，那这一次更新就没有被绘制，人就会感觉到卡。
+
+对比介绍类组件时也有个在commit阶段执行的函数，getSnapshotBeforeUpdate，useLayoutEffect与getSnapshotBeforeUpdate的执行时机却有细微的差别，前者是在真实dom更新完毕浏览器还未绘制之前触发，这是拿到的是更新后的dom，后者是在真实dom还未更新即将更新时触发，这时拿到的是更新前的dom。
+
+最后说一下useEffect，这个hook的回调函数是在commit阶段执行完毕异步执行的。这时dom已经更新完毕并且浏览器也完成了绘制，因为是异步执行，所以不像useLayoutEffect那么小心翼翼的。
