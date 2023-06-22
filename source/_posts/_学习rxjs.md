@@ -240,6 +240,121 @@ setTimeout(()=>{
 
 rxjs中有一些函数并不是操作符，这类函数能直接创造出observable对象，比如of、interval、timer、from、fromEvent之类的，前三个就不说了，后两个可以把不是observable的数据转换成observable，比如from([1,2,3])、fromEvent(inputDom,'input')
 
+# rxjs适用的场景
+前面已经说过，rxjs主要是操作流的工具集，如果某个数据/操作不是流，需要先转换成流。简单的数据这样做是很麻烦的，假如我们要过滤某些数据，我们完全可以调用数组的filter方法，又比如有一个promise，如果用rxjs处理也很麻烦，一个最朴素的promise用法
+
+```javascript
+fetch('https://www.example.com').then(res=>res.json()).then(console.log)
+```
+用rxjs需要这样写
+```javascript
+from(
+    fetch('https://www.example.com')
+).pipe(
+    mergeMap(res=>res.json())
+).subscribe({
+    next: console.log
+})
+```
+其实这样简单的问题交给rxjs去处理，完全是高射炮打蚊子，那rxjs适合什么场景呢，我觉得主要有两个方面: 
+
+1. rxjs适合那种可以<em style="font-weight:800">高频触发</em>的场景，比如上文中提到的实用的例子，像我们经常提到的去抖、节流之类的，在人家这就一个操作符的事。有人说rxjs可以用来处理复杂的异步，常见的异步直接上promise，或者Promise.all都能覆盖绝大多数场景，但是你有没有发现promise是有弊端的，像fetch-event-source或者websocket这类长连接，用promise会力不从心，这时候rxjs就可以大展神通，还可以用bufferCount或者bufferTime控制下游的压力，更复杂点的，假如页面上有多个长连接，也可以用rxjs。
+
+来个大家都熟悉的例子，假如有这样一个场景，在2s内输入规定的按键，可以触发彩蛋操作，就像打游戏释放隐藏大招，这样一个需求代码怎么写，如果用rxjs不要太简单
+```javascript
+const code = [
+   "ArrowUp",
+   "ArrowUp",
+   "ArrowDown",
+   "ArrowDown",
+   "ArrowLeft",
+   "ArrowRight",
+   "ArrowLeft",
+   "ArrowRight",
+   "KeyB",
+   "KeyA",
+   "KeyB",
+   "KeyA"
+]
+Rx.Observable.fromEvent(document, 'keyup')
+    .map(e => e.code)
+    .bufferTime(2000)
+    .filter(keys => keys.length === 12 && _.isEqual(last12key, code))
+    .subscribe(() => {
+        console.log('隐藏的彩蛋 \(^o^)/~')
+    })
+```
+当然你通过监听document的keyup事件，然后计时也可以实现，不过你有没有发现用rxjs写完整个过程一气呵成，代码也很有语义，是别的方法难以比拟的。
+
+2. 把数据/操作转换成流，可以蹭rxjs的操作符，假如有这样一个场景，用javascript上传一个大文件，要求实现分片上传与断点续传，用rxjs可以这样写: 
+
+```javascript
+function uploadChunk(buffer){
+    return fetch('http://www.example/upload',{
+        data: buffer,
+        method: 'post'
+    })
+}
+
+function uploadChunkFunc(buffer,index){
+    return from(
+        uploadChunk(buffer)
+    ).pipe(
+        mergeMap(()=>{
+            return of(index)
+        })
+    )
+}
+
+const size = 1024 * 1024
+
+function upload (file,uploadChunk = []){
+    const chunk = []
+    for(let i=0;i<file.byteLength.length;i+=size){
+        chunk.push(file.slice(i, i + size))
+    }
+    return from(chunk).pipe(
+        mergeMap((buffer,i)=>{
+            if(uploadChunk.includes(i)) return of(i)
+            return uploadChunkFunc(buffer,i)
+        })
+        .retryWhen(errors=>{
+            return errors.pipe(delay(1000),takeWhile((_,index)=> index < 3))
+        })
+        .mergeMap((index)=>{
+            if(!uploadChunk.includes(index)) {
+                uploadChunk.push(index)
+                return of(index)
+            }
+            if(uploadChunk.length === chunk.length) return EMPTY
+            return upload(file, uploadChunk)
+        })
+    )
+}
+const file = new ArrayBuffer(10 * size)
+upload(file).subscribe({
+    next: console.log,
+    complete: ()=>console.log('complete'),
+    error: error=>console.log(error)
+})
+```
+当然，用promise也可以完成这个需求，但是要实现错误重试并且把代码写的好一点还是rxjs好。
+# rxjs操作符
+如何灵活运用操作符，是rxjs的核心，但是我不想逐个介绍，知识应该是网状的。我决定找几个例子，尽量覆盖常用的操作符。
+
+## 例子1(上面的两个例子)
+命中的操作符: retryWhen、takeWhile、bufferTime、filter
+### retryWhen
+从上面的例子可以看出，retryWhen会拦截上游抛出的错误，这个操作符的参数是一个函数，并且这个函数必须return一个observable，这个函数的参数是上游出错的原始observable，就像上面的例子:
+```javascript
+//...
+retryWhen(errors=>{
+    return errors.pipe(delay(1000),takeWhile((_,index)=> index < 3))
+})
+//...
+```
+这里的errors就是上游出错的原始observable，所以可以继续pipe，这里延迟了1秒
+
 # rxjs操作符
 ## 转换操作符
 ## 过滤操作符
@@ -315,51 +430,3 @@ concat是三者里面最简单的，有点类似数组的concat方法，剩下�
 ## catchError
 
 ## bufferCount/bufferTime
-
-# rxjs适用的场景
-前面已经说过，rxjs主要是操作流的工具集，如果某个数据/操作不是流，需要先转换成流。简单的数据这样做是很麻烦的，假如我们要过滤某些数据，我们完全可以调用数组的filter方法，又比如有一个promise，如果用rxjs处理也很麻烦，一个最朴素的promise用法
-
-```javascript
-fetch('https://www.example.com').then(res=>res.json()).then(console.log)
-```
-用rxjs需要这样写
-```javascript
-from(
-    fetch('https://www.example.com')
-).pipe(
-    mergeMap(res=>res.json())
-).subscribe({
-    next: console.log
-})
-```
-其实这样简单的问题交给rxjs去处理，完全是高射炮打蚊子，那rxjs适合什么场景呢，我觉得rxjs适合那种可以<em style="font-weight:800">高频触发</em>的场景，比如上文中提到的实用的例子，像我们经常提到的去抖、节流之类的，在人家这就一个操作符的事。有人说rxjs可以用来处理复杂的异步，常见的异步直接上promise，或者Promise.all都能覆盖绝大多数场景，但是你有没有发现promise是有弊端的，像fetch-event-source或者websocket这类长连接，用promise会力不从心，这时候rxjs就可以大展神通，还可以用bufferCount或者bufferTime控制下游的压力，更复杂点的，假如页面上有多个长连接，也可以用rxjs。
-
-虽然rxjs中的from与fromEvent可以把常见的数据/操作转换成一个流，但是大多数转换是没有意义的，rxjs是高效处理流的工具集，只有长的像流的数据/操作装换成流才能发挥出rxjs的威力，所以以我所见，判断某个需求是否需要引入rxjs，可以看这个需求是否需要高频触发。
-
-最后给一个彩蛋，假如有这样一个场景，在2s内输入规定的按键，可以触发彩蛋操作，就像打游戏释放隐藏大招，这样一个需求代码怎么写，如果用rxjs不要太简单
-```javascript
-const code = [
-   "ArrowUp",
-   "ArrowUp",
-   "ArrowDown",
-   "ArrowDown",
-   "ArrowLeft",
-   "ArrowRight",
-   "ArrowLeft",
-   "ArrowRight",
-   "KeyB",
-   "KeyA",
-   "KeyB",
-   "KeyA"
-]
-Rx.Observable.fromEvent(document, 'keyup')
-    .map(e => e.code)
-    .bufferTime(2000)
-    .filter(keys => keys.length === 12)
-    .subscribe(last12key => {
-        if (_.isEqual(last12key, code)) {
-            console.log('隐藏的彩蛋 \(^o^)/~')
-        }
-    })
-```
-当然你通过监听document的keyup事件，然后计时也可以实现，不过你有没有发现用rxjs写完整个过程一气呵成，代码也很有语义，是别的方法难以比拟的。
