@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>Hexo</title><meta name="author" content="likaiqiang"><meta name="copyright" content="likaiqiang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description"><link rel="shortcut icon" href="/img/siteicon/favicon.ico"><link rel="canonical" href="https://likaiqianglearn.cn/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><meta name="msapplication-TileColor" content="#ffffff"/><link rel="apple-touch-icon" sizes="180x180" href="/img/siteicon/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/img/siteicon/favicon-32x32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/img/siteicon/favicon-16x16.png"/><link rel="mask-icon" href="/img/siteicon/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hexo',
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2023-06-23 11:04:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/QQ图片20210723090732.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> HOME</span></a></div><div class="menus_item"><a class="site-page" href="/2022/04/16/%E4%B8%80%E4%BA%9B%E7%BB%8F%E9%AA%8C%E7%89%87%E6%AE%B5/"><i class="fa-fw fas fa-archive"></i><span> GIST</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/微信图片_20211121110405.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Hexo"><span class="site-name">Hexo</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> HOME</span></a></div><div class="menus_item"><a class="site-page" href="/2022/04/16/%E4%B8%80%E4%BA%9B%E7%BB%8F%E9%AA%8C%E7%89%87%E6%AE%B5/"><i class="fa-fw fas fa-archive"></i><span> GIST</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Hexo</h1></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/06/21/%E6%89%8B%E5%86%99promise/" title="手写promise">手写promise</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2023-06-21T22:37:56.000Z" title="Created 2023-06-21 22:37:56">2023-06-21</time></span></div><div class="content">Promise这个构造函数与别的不一样，尽管平时使用时比较爽，但是站在函数设计者的角度来看就比较怪异。首先构造函数的参数是个函数（executor），这个函数的两个参数resolve与reject又是两个函数，且是在Promise构造函数内部定义的，调用executor时需要作为executor的参数。
+Promise的then方法的参数又是两个函数（onFulfilled与onRejected），这两函数会在该promise实例resolve或者reject时分别调用，且then方法还可以链式调用与值穿透。看起来很像一堆函数在互相作用，但Promise的用法却是面向对象的方式，所以容易让人困惑。
+先不考虑then方法的链式调用与值穿透，实现一个简易版的promise。
+一个普通的不支持链式调用的promise123456789101112131415161718192021222324252627282930313233343536373839404142function MyPromise(executor)&#123; // 这个executor便是我们new Promise时传 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/05/08/webpack%E5%B8%B8%E8%A7%81loader%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" title="webpack常见loader工作原理">webpack常见loader工作原理</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2023-05-08T15:13:26.000Z" title="Created 2023-05-08 15:13:26">2023-05-08</time></span></div><div class="content">file-loader与url-loader这俩loader就是纸老虎，曾经老有面试问这俩loader的区别，每次都去记😂，其实只要看看他俩的源码就明白了。先来一个简单的例子
+12345678910111213141516171819202122232425//webpack.config.jsrequire(&#x27;@babel/register&#x27;)(&#123;    presets: [&#x27;@babel/preset-env&#x27;]&#125;);module.exports = &#123;    entry: &#x27;./src/index.js&#x27;,    //...    module:&#123;        rules:[            &#123;                test: /\.(png|jpe?g|gif)$/i,                use: [                    &#123;                        loader: path.resolve ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/04/19/%E6%95%B4%E7%90%86react%E9%87%8C%E9%9D%A2%E9%82%A3%E4%BA%9B%E5%AE%B9%E6%98%93%E8%AE%A9%E4%BA%BA%E6%B7%B7%E6%B7%86%E7%9A%84%E6%A6%82%E5%BF%B5-u-1F602/" title="整理react里面那些容易让人混淆的概念 😂">整理react里面那些容易让人混淆的概念 😂</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2023-04-19T14:19:09.000Z" title="Created 2023-04-19 14:19:09">2023-04-19</time></span></div><div class="content">react为什么要引入fiber在解释为什么之前，先来说一说react16之前组件的更新过程。
+1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950class Child extends React.Component &#123;  componentWillMount() &#123;    console.log(&quot;Child componentWillMount&quot;);  &#125;  render() &#123;    console.log(&quot;Child render&quot;);    return &lt;div&gt;child&lt;/div&gt;;  &#125;  componentDidMount() &#123;    console.log(&quot;Child componentDidMount&quot;);  &#125;  componentWillReceiveProps() &# ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/03/17/%E5%AD%A6%E4%B9%A0ahooks%E4%B9%8BuseLongPress/" title="学习ahooks之useLongPress">学习ahooks之useLongPress</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2023-03-17T19:23:09.000Z" title="Created 2023-03-17 19:23:09">2023-03-17</time></span></div><div class="content">缘由可能是小程序api用多了，前几天写网页有个需求是监听长按，竟然有点生疏，幸好ahooks实现了useLongPress这个hook。
+代码原版代码
+123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125const touchSupported =  isBrowser &amp;&amp;  // @ts-ignore  (&#x27;ontouchstart&#x27; in window || (window.DocumentTouch &amp;&amp; document instanceof Docu ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2023/03/06/%E4%BA%AE%E5%BA%A6%E3%80%81%E5%AF%B9%E6%AF%94%E5%BA%A6%E3%80%81%E9%A5%B1%E5%92%8C%E5%BA%A6%E7%9A%84%E5%8C%BA%E5%88%AB/" title="亮度、对比度、饱和度的区别">亮度、对比度、饱和度的区别</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2023-03-06T20:01:31.000Z" title="Created 2023-03-06 20:01:31">2023-03-06</time></span></div><div class="content">前言开始之前先看网上对这三者的解释。
+亮度、对比度和饱和度是图像处理中的三个基本概念。亮度是指图像的明亮程度，对比度是指图像中最亮和最暗部分之间的差异，饱和度是指图像中颜色的鲜艳程度。一般来说，对比度越大，图像越清晰醒目，色彩也越鲜明艳丽；而对比度小，则会让整个画面都灰蒙蒙的。
+看这些文字并不能完全理解这三者，反而容易混淆，看起来这三者都能调整画面的明暗，但又有所不同。
+作为一个程序员，代码语言是比人言更加精确的。既然理解不了文字，就看代码如何实现。
+亮度1234567891011function adjustBrightness(imageData, brightness) &#123;  const data = imageData.data;  for (let i = 0; i &lt; data.length; i += 4) &#123;    data[i] = data[i] * brightness;    data[i + 1] = data[i + 1] * brightness;    data[i + 2] = data[i + 2] * brightness ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2022/08/07/%E7%99%BE%E5%BA%A6%E4%BA%91%E7%9B%98to%E9%98%BF%E9%87%8C%E4%BA%91%E7%9B%98/" title="百度云盘to阿里云盘">百度云盘to阿里云盘</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2022-08-07T17:35:18.000Z" title="Created 2022-08-07 17:35:18">2022-08-07</time></span></div><div class="content">前言2T百度云终究还是满了，常年的日积月累，删又不知道该该删啥。阿里云盘最近兴起，如果能把部分文件移到阿里云盘里就好了，由于众所周知的原因，百度与阿里的数据是不可能相通的，也不可能会出现官方的xxx迁移工具之类的。所以，这又是一个八仙过海各显神通的活，大家的思路普遍都是先把百度云盘里的资料下载下来，然后再上传到阿里云，这让我想起来宋丹丹的一句名言，把大象装冰箱分几步…
+思路是这样没错，但是大神的做法跟普通人就是不一样，可以参考这个 帖子。本文介绍的是用webdav的那个。
+
+正文本文只适用于windows操作系统。
+整体的流程就是帖子里说的1、2、3、4、5，不过作为一个务实的搬运工，实际操作过程中有跟帖子不一样的地方。
+第一处：
+作者一笔带过…。正常操作是这样的，找到你电脑的“启动或关闭windows功能”，然后找到Hyper-V选项，勾上。
+
+有些人可能找不到Hyper-V选项（比如我），这种情况需要单独安装Hyper-V，参考这篇 .
+在实际操作过程中发现Hyper-V.cmd下载资源很慢，所以最好加上这一句
+1netsh winhttp set proxy http://127 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2022/02/13/%E5%86%99%E4%B8%80%E4%B8%AA%E5%B7%A6%E5%88%92%E5%88%A0%E9%99%A4%E5%8A%9F%E8%83%BD/" title="写一个左划删除功能">写一个左划删除功能</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2022-02-13T00:19:07.000Z" title="Created 2022-02-13 00:19:07">2022-02-13</time></span></div><div class="content">需求是写一个小程序，用来实现一个app大部分功能。里面有个功能是列表的左划删除，可能app那边有现成的组件&#x2F;库可以用，小程序官方没有提供这样的组件，于是求助于google。
+搜到了这个 ,看起来挺好的，但是要求高度固定，我列表里面有图片，我无法确定图片的高度固定，跟相关人员沟通起来又是一堆废话，算是备选。
+然后找到了这个
+nutui的swipe组件，源码 vue写的，我项目用的是react，不过没关系，vue3的Composition api与react hooks是师出同门。看懂它然后翻译一下(我又找到了一个适合自己的巨人)。
+源码解读布局html、css、js永远是一家人，不要看不起html、css，优秀的布局可以省好多代码。
+
+
+布局分为3部分，content、left、right，content为列表的主要内容，left&#x2F;right分别表示向右&#x2F;左滑所展示的额外内容，然后left、right分别绝对定位，并且配合translate移出content的可见范围。
+逻辑12345678910111213141516171819202122&lt;tem ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2022/02/05/%E5%A6%82%E4%BD%95%E4%B8%8B%E8%BD%BD%E8%85%BE%E8%AE%AF%E8%AF%BE%E5%A0%82%E8%A7%86%E9%A2%91/" title="如何下载腾讯课堂视频">如何下载腾讯课堂视频</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2022-02-05T20:21:21.000Z" title="Created 2022-02-05 20:21:21">2022-02-05</time></span></div><div class="content">腾讯课堂“贴心”的给我们提供了回放功能，但是图心理安慰，老想着如何下载下来才安心。（自己看，不传播）
+随便打开一个腾讯课堂视频，比如这个 随便找一个。chrome浏览器右击检查，打开开发者控制台，NetWork面板，再次刷新网页，NetWork筛选m3u8关键词。
+
+这便是该视频不同分辨率的资源，这些链接是不能直接下载的，需要解密，用这个 解，貌似c#写的。
+对，没错，我就是搬用工，一点技术含量也没有。
+如果有多个视频需要下载，上述过程略显麻烦。可以移步火狐浏览器，下载Video DownloadHelper 插件，这玩意能直接识别出资源，并且告诉你不同的分辨率，然后还是需要解密m3u8。
+如果需要下载的视频巨多，连用插件copy链接都觉的麻烦，后续看能不能写个爬虫什么的，自动copy链接。然后研究下解密m3u8那工具支不支持批量下载，暂时就这样。
+</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2022/01/09/%E5%AD%A6%E4%B9%A0java%E5%86%85%E9%83%A8%E7%B1%BB/" title="学习java内部类">学习java内部类</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2022-01-09T22:04:25.000Z" title="Created 2022-01-09 22:04:25">2022-01-09</time></span></div><div class="content">前言作为一个只擅长javascript的伪程序员，学习java还是挺费劲的，不过没关系，再庞然大物，也能分而治之。
+google搜内部类，好多文章都说java有四种内部类。成员内部类，静态内部类、局部内部类、匿名内部类。记性好的可以直接记住，彷佛回到了读书时代。
+四大内部类成员内部类java是一门强大的面向对象编程语言。在java中，一个类的成员变量，可以是字符串、数字这样的基础数据类型，也可以是数组、Map这样的复杂数据类型，甚至可以是别的类的实例，那为什么不能是一个类呢？
+所以把一个类放在java的成员变量位置上，这个类就是成员内部类，放到静态变量位置上，这个类就是静态内部类。
+所以很容易写出这样的代码。
+123456789101112131415public class xxxOuterClass &#123;    private String a = &quot;1212&quot;;    class Inner&#123;        void log()&#123;            System.out.println(a); //标记1        &#12 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2021/12/21/%E5%AD%A6%E4%B9%A0vue-clamp/" title="学习vue-clamp">学习vue-clamp</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2021-12-21T22:34:11.000Z" title="Created 2021-12-21 22:34:11">2021-12-21</time></span></div><div class="content">前言项目地址
+无意间看到这个库，利用getClientRects与二分法实现多行文字的超出截断，虽说flex更简洁，但是想起我n年前兼容IE时的痛楚，虽说现在不用兼容IE了，但是原理什么的还是忍不住瞅一眼。
+关键是知不知道getClientRects 。这玩意兼容性好强大。假如是行内元素调用getClientRects，会返回一个rects集合，这个集合的length就是文本的行数，好简洁，完全不用关心行高什么的。
+api
+tag: 由于内部是由render函数生成的vnode，比起template，tag是可以变的，默认是div。
+autoresize: 内部使用resize-detector这个库监听组件的resize事件，size变化时，更新截断状态。
+max-lines: 最大行数
+max-height: 最大高度。max-height与max-lines指定一个即可。
+ellipsis: 省略符号，默认…
+location: ellipsis的位置，默认end。
+expanded: 初始状态是否展开，默认false。
+
+slot
+
+default：默认插槽为文本的实际内容（非 ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/QQ图片20210723090732.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">likaiqiang</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/21/%E6%89%8B%E5%86%99promise/" title="手写promise">手写promise</a><time datetime="2023-06-21T22:37:56.000Z" title="Created 2023-06-21 22:37:56">2023-06-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/05/08/webpack%E5%B8%B8%E8%A7%81loader%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" title="webpack常见loader工作原理">webpack常见loader工作原理</a><time datetime="2023-05-08T15:13:26.000Z" title="Created 2023-05-08 15:13:26">2023-05-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/04/19/%E6%95%B4%E7%90%86react%E9%87%8C%E9%9D%A2%E9%82%A3%E4%BA%9B%E5%AE%B9%E6%98%93%E8%AE%A9%E4%BA%BA%E6%B7%B7%E6%B7%86%E7%9A%84%E6%A6%82%E5%BF%B5-u-1F602/" title="整理react里面那些容易让人混淆的概念 😂">整理react里面那些容易让人混淆的概念 😂</a><time datetime="2023-04-19T14:19:09.000Z" title="Created 2023-04-19 14:19:09">2023-04-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/03/17/%E5%AD%A6%E4%B9%A0ahooks%E4%B9%8BuseLongPress/" title="学习ahooks之useLongPress">学习ahooks之useLongPress</a><time datetime="2023-03-17T19:23:09.000Z" title="Created 2023-03-17 19:23:09">2023-03-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/03/06/%E4%BA%AE%E5%BA%A6%E3%80%81%E5%AF%B9%E6%AF%94%E5%BA%A6%E3%80%81%E9%A5%B1%E5%92%8C%E5%BA%A6%E7%9A%84%E5%8C%BA%E5%88%AB/" title="亮度、对比度、饱和度的区别">亮度、对比度、饱和度的区别</a><time datetime="2023-03-06T20:01:31.000Z" title="Created 2023-03-06 20:01:31">2023-03-06</time></div></div></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span><a class="card-more-btn" href="/archives/" title="More">
+    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/06/"><span class="card-archive-list-date">June 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/05/"><span class="card-archive-list-date">May 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/04/"><span class="card-archive-list-date">April 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/03/"><span class="card-archive-list-date">March 2023</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/08/"><span class="card-archive-list-date">August 2022</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/02/"><span class="card-archive-list-date">February 2022</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/01/"><span class="card-archive-list-date">January 2022</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/12/"><span class="card-archive-list-date">December 2021</span><span class="card-archive-list-count">2</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">13</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Push :</div><div class="item-count" id="last-push-date" data-lastPushDate="2023-06-23T11:04:46.170Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By likaiqiang</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

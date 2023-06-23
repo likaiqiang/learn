@@ -1,0 +1,190 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>学习vue-clamp | Hexo</title><meta name="author" content="likaiqiang"><meta name="copyright" content="likaiqiang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言项目地址 无意间看到这个库，利用getClientRects与二分法实现多行文字的超出截断，虽说flex更简洁，但是想起我n年前兼容IE时的痛楚，虽说现在不用兼容IE了，但是原理什么的还是忍不住瞅一眼。 关键是知不知道getClientRects 。这玩意兼容性好强大。假如是行内元素调用getC"><link rel="shortcut icon" href="/img/siteicon/favicon.ico"><link rel="canonical" href="https://likaiqianglearn.cn/2021/12/21/%E5%AD%A6%E4%B9%A0vue-clamp/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><meta name="msapplication-TileColor" content="#ffffff"/><link rel="apple-touch-icon" sizes="180x180" href="/img/siteicon/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/img/siteicon/favicon-32x32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/img/siteicon/favicon-16x16.png"/><link rel="mask-icon" href="/img/siteicon/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '学习vue-clamp',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-23 11:04:13'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/QQ图片20210723090732.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> HOME</span></a></div><div class="menus_item"><a class="site-page" href="/2022/04/16/%E4%B8%80%E4%BA%9B%E7%BB%8F%E9%AA%8C%E7%89%87%E6%AE%B5/"><i class="fa-fw fas fa-archive"></i><span> GIST</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/微信图片_20211121110405.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Hexo"><span class="site-name">Hexo</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> HOME</span></a></div><div class="menus_item"><a class="site-page" href="/2022/04/16/%E4%B8%80%E4%BA%9B%E7%BB%8F%E9%AA%8C%E7%89%87%E6%AE%B5/"><i class="fa-fw fas fa-archive"></i><span> GIST</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">学习vue-clamp</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-12-21T22:34:11.000Z" title="Created 2021-12-21 22:34:11">2021-12-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-06-23T11:04:13.108Z" title="Updated 2023-06-23 11:04:13">2023-06-23</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="学习vue-clamp"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a target="_blank" rel="noopener" href="https://github.com/Justineo/vue-clamp">项目地址</a></p>
+<p>无意间看到这个库，利用getClientRects与二分法实现多行文字的超出截断，虽说flex更简洁，但是想起我n年前兼容IE时的痛楚，虽说现在不用兼容IE了，但是原理什么的还是忍不住瞅一眼。</p>
+<p>关键是知不知道<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getClientRects">getClientRects</a> 。这玩意兼容性好强大。假如是行内元素调用getClientRects，会返回一个rects集合，这个集合的length就是文本的行数，好简洁，完全不用关心行高什么的。</p>
+<h1 id="api"><a href="#api" class="headerlink" title="api"></a>api</h1><ol>
+<li>tag: 由于内部是由render函数生成的vnode，比起template，tag是可以变的，默认是div。</li>
+<li>autoresize: 内部使用resize-detector这个库监听组件的resize事件，size变化时，更新截断状态。</li>
+<li>max-lines: 最大行数</li>
+<li>max-height: 最大高度。max-height与max-lines指定一个即可。</li>
+<li>ellipsis: 省略符号，默认…</li>
+<li>location: ellipsis的位置，默认end。</li>
+<li>expanded: 初始状态是否展开，默认false。</li>
+</ol>
+<p>slot</p>
+<ol>
+<li>default：默认插槽为文本的实际内容（非展示内容）。</li>
+<li>after&#x2F;before：这俩插槽取其一，关于它们的slot scope后面会说。</li>
+</ol>
+<h1 id="用代码简述原理"><a href="#用代码简述原理" class="headerlink" title="用代码简述原理"></a>用代码简述原理</h1><p>vue组件不好解释，语法灵活&#x2F;随意，各种数据自动响应，计算属性什么的互相依赖，读起来挺爽的，给别人解释可太难了。所以我先写个小而美的clamp，方便理解核心原理。</p>
+<figure class="highlight typescript"><figcaption><span>jsx</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    <span class="attr">props</span>:&#123;</span><br><span class="line">      <span class="attr">lines</span>:&#123;</span><br><span class="line">          <span class="attr">type</span>: <span class="title class_">Number</span>,</span><br><span class="line">          <span class="attr">default</span>: <span class="number">3</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">data</span>(<span class="params"></span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">text</span>:<span class="variable language_">this</span>.<span class="title function_">getText</span>(),</span><br><span class="line">            <span class="attr">offsetSet</span>: <span class="variable language_">this</span>.<span class="title function_">getText</span>().<span class="property">length</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">render</span>(<span class="params"></span>)&#123;</span><br><span class="line">        <span class="keyword">const</span> [content] = <span class="variable language_">this</span>.<span class="property">$slots</span>.<span class="property">default</span></span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            <span class="language-xml"><span class="tag">&lt;<span class="name">span</span> <span class="attr">ref</span>=<span class="string">&quot;text&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                &#123;content&#125;</span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;/<span class="name">span</span>&gt;</span></span></span><br><span class="line">        )</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">mounted</span>(<span class="params"></span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="variable language_">this</span>.<span class="title function_">isOverflow</span>())&#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="title function_">search</span>()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">methods</span>:&#123;</span><br><span class="line">        <span class="title function_">search</span>(<span class="params"><span class="keyword">from</span>=<span class="number">0</span>,to=<span class="variable language_">this</span>.text.length</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(to-<span class="keyword">from</span>&lt;=<span class="number">3</span>)&#123;</span><br><span class="line">                <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;done&#x27;</span>);</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">offset</span> = <span class="title class_">Math</span>.<span class="title function_">floor</span>((<span class="keyword">from</span> + to) / <span class="number">2</span>)</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">$refs</span>.<span class="property">text</span>.<span class="property">textContent</span> = <span class="variable language_">this</span>.<span class="property">text</span>.<span class="title function_">slice</span>(<span class="number">0</span>,<span class="variable language_">this</span>.<span class="property">offset</span>)</span><br><span class="line">            <span class="keyword">if</span>(<span class="variable language_">this</span>.<span class="title function_">isOverflow</span>())&#123;</span><br><span class="line">                <span class="variable language_">this</span>.<span class="title function_">search</span>(<span class="keyword">from</span>,<span class="variable language_">this</span>.<span class="property">offset</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="variable language_">this</span>.<span class="title function_">search</span>(<span class="variable language_">this</span>.<span class="property">offset</span>,to)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="title function_">getText</span>(<span class="params"></span>)&#123;</span><br><span class="line">            <span class="keyword">const</span> [content] = (<span class="variable language_">this</span>.<span class="property">$slots</span>.<span class="property">default</span> || []).<span class="title function_">filter</span>(</span><br><span class="line">                <span class="function">(<span class="params">node</span>) =&gt;</span> !node.<span class="property">tag</span> &amp;&amp; !node.<span class="property">isComment</span></span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">return</span> content ? content.<span class="property">text</span> : <span class="string">&#x27;&#x27;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="title function_">getLines</span>(<span class="params"></span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">$refs</span>.<span class="property">text</span>.<span class="title function_">getClientRects</span>().<span class="property">length</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="title function_">isOverflow</span>(<span class="params"></span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="title function_">getLines</span>() &gt; <span class="variable language_">this</span>.<span class="property">lines</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只有一个props（lines：表示文本的行数），data里面有两个属性text与offset，text表示原始的文本，offset是个信标，表示发生截断的位置，只要offset不等于text的长度，就认为文本发生了截断。</p>
+<p>render函数里面拿到了默认插槽的vnode，并用span渲染出来，为什么是span，因为只有行内元素调用getClientRects才会返回文本长度。从这里还可以看出，插槽与渲染竟然可以分开！！<br>第一次渲染会渲染出全部文本，在mounted里面通过isOverflow判断是否溢出，即文本的实际行数是否大于props.lines，如果发生了溢出，调用search方法，search方法使用了二分法不停的改变offset的位置，直到from与to的差值小于等于3，为什么是3呢，我猜是省略号(…)的长度，这样就算出了最佳的offset以及最佳的截断文本。</p>
+<h1 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h1><p>源码与我那个有什么不同：</p>
+<ol>
+<li>支持更多的props</li>
+<li>检测元素的尺寸是否发生变化</li>
+<li>支持更多的插槽</li>
+</ol>
+<p>可以自定义tag，设置是否检测元素的尺寸变化，是否以maxHeight代替maxLines，设置省略号的文本（默认是…），以及省略号的位置。expanded设置初次渲染是否展开文本.</p>
+<p>先从render函数看起。<br><a target="_blank" rel="noopener" href="https://github.com/Justineo/vue-clamp/blob/master/src/components/Clamp.js#L227">render</a><br>整体来看，多了before与after插槽的逻辑，before与after取其一。值得注意的是this.$scopedSlots这个api，作用域插槽在render函数里面竟然是这样用的，scope就是传递给插槽的作用域，this.$scopedSlots.before&#x2F;afer(scope)的结果是vnode。然后竟然可以把组件的方法传给scope，又学到了。</p>
+<p>mounted调用init，init内部有一些是否检测元素尺寸变化的逻辑，用了resize-detector，这个库也是作者写的，init最终调用update。update开篇有个localExpanded，这个就是props.expanded，内部写了几个watch来同步两者的状态。然后调用search，和上面的精简版不一样的是多了个stepToFit方法，这个方法的作用是微调offset，即在用二分法得到最终的文本后，最后一行文本的长度可能不满一行，先调用fill方法使文本充满一行（可能发生换行），然后调用clamp方法使文本刚好充满一行。</p>
+<p>原理就是这样。看一下github上的demo。</p>
+<p>before&#x2F;after插槽是个button，点击button调用了toggle方法。</p>
+<figure class="highlight typescript"><figcaption><span>jsx</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">toggle () &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">localExpanded</span> = !<span class="variable language_">this</span>.<span class="property">localExpanded</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这句话会触发localExpanded的watch</p>
+<figure class="highlight typescript"><figcaption><span>jsx</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (val) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">clampAt</span>(<span class="variable language_">this</span>.<span class="property">text</span>.<span class="property">length</span>)</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">update</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果localExpanded为true，还原文本，否则，重新截断文本。</p>
+<p>最后，值得注意的是mounted里面的watch写法</p>
+<figure class="highlight typescript"><figcaption><span>jsx</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span>.$watch(</span><br><span class="line">  <span class="function">(<span class="params">vm</span>) =&gt;</span> [vm.<span class="property">maxLines</span>, vm.<span class="property">maxHeight</span>, vm.<span class="property">ellipsis</span>, vm.<span class="property">isClamped</span>].<span class="title function_">join</span>(),</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">update</span></span><br><span class="line">)</span><br><span class="line"><span class="variable language_">this</span>.$watch(<span class="function">(<span class="params">vm</span>) =&gt;</span> [vm.<span class="property">tag</span>, vm.<span class="property">text</span>, vm.<span class="property">autoresize</span>].<span class="title function_">join</span>(), <span class="variable language_">this</span>.<span class="property">init</span>)</span><br></pre></td></tr></table></figure>
+<p>又学到了，这种做法可以同时watch多个参数，执行相同的逻辑。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://likaiqianglearn.cn">likaiqiang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://likaiqianglearn.cn/2021/12/21/%E5%AD%A6%E4%B9%A0vue-clamp/">https://likaiqianglearn.cn/2021/12/21/%E5%AD%A6%E4%B9%A0vue-clamp/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/QQ图片20210723090732.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/01/09/%E5%AD%A6%E4%B9%A0java%E5%86%85%E9%83%A8%E7%B1%BB/" title="学习java内部类"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">学习java内部类</div></div></a></div><div class="next-post pull-right"><a href="/2021/12/03/%E5%AD%A6%E4%B9%A0ahooks%E4%B9%8BuseRequest/" title="学习ahooks之useRequest"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">学习ahooks之useRequest</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/QQ图片20210723090732.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">likaiqiang</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#api"><span class="toc-number">2.</span> <span class="toc-text">api</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%94%A8%E4%BB%A3%E7%A0%81%E7%AE%80%E8%BF%B0%E5%8E%9F%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">用代码简述原理</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="toc-number">4.</span> <span class="toc-text">源码解读</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/21/%E6%89%8B%E5%86%99promise/" title="手写promise">手写promise</a><time datetime="2023-06-21T22:37:56.000Z" title="Created 2023-06-21 22:37:56">2023-06-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/05/08/webpack%E5%B8%B8%E8%A7%81loader%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" title="webpack常见loader工作原理">webpack常见loader工作原理</a><time datetime="2023-05-08T15:13:26.000Z" title="Created 2023-05-08 15:13:26">2023-05-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/04/19/%E6%95%B4%E7%90%86react%E9%87%8C%E9%9D%A2%E9%82%A3%E4%BA%9B%E5%AE%B9%E6%98%93%E8%AE%A9%E4%BA%BA%E6%B7%B7%E6%B7%86%E7%9A%84%E6%A6%82%E5%BF%B5-u-1F602/" title="整理react里面那些容易让人混淆的概念 😂">整理react里面那些容易让人混淆的概念 😂</a><time datetime="2023-04-19T14:19:09.000Z" title="Created 2023-04-19 14:19:09">2023-04-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/03/17/%E5%AD%A6%E4%B9%A0ahooks%E4%B9%8BuseLongPress/" title="学习ahooks之useLongPress">学习ahooks之useLongPress</a><time datetime="2023-03-17T19:23:09.000Z" title="Created 2023-03-17 19:23:09">2023-03-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/03/06/%E4%BA%AE%E5%BA%A6%E3%80%81%E5%AF%B9%E6%AF%94%E5%BA%A6%E3%80%81%E9%A5%B1%E5%92%8C%E5%BA%A6%E7%9A%84%E5%8C%BA%E5%88%AB/" title="亮度、对比度、饱和度的区别">亮度、对比度、饱和度的区别</a><time datetime="2023-03-06T20:01:31.000Z" title="Created 2023-03-06 20:01:31">2023-03-06</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By likaiqiang</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
