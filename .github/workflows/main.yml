@@ -20,10 +20,9 @@ jobs:
           node-version: 14
       - name: npm i
         run: |
-          npm install
+          npm i
           npx ts-node copyTheme.ts
           npx hexo g
-          npx gulp
           npx ts-node -T ./oss.ts
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.3
