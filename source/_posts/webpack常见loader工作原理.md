@@ -256,6 +256,7 @@ return fallback.call(fallbackLoaderContext, content); //最后执行file-loader
 async function loader(content) {
     const options = this.getOptions(schema); //获取使用sass-loader时传入的options，这里为空
     const callback = this.async(); //这个async函数会返回一个异步执行的函数callback，执行这个callback会把当前loader的结果传递给下一个loader。这里sass-loader不是最终的loader，所以需要这个。
+    // callback函数第一个参数是个错误对象，第二个参数是转换后的javascript代码（buffer或者string），第三个参数是可选的sourcemap对象。
     const implementation = getSassImplementation(this, options.implementation);
     // 获取sass解析器，可以是node-sass、dart-sass或者sass-embedded
 
@@ -277,7 +278,7 @@ async function loader(content) {
     const shouldUseWebpackImporter =
         typeof options.webpackImporter === "boolean"
             ? options.webpackImporter
-            : true;  //表示是否使用webpack解析源码里面的@import，这里的值是true
+            : true;  //表示是否使用webpack解析代码里面的@import，这里的值是true
 
     if (shouldUseWebpackImporter) {
         const isModernAPI = options.api === "modern";
@@ -389,7 +390,7 @@ export default ___CSS_LOADER_EXPORT___;
 ```
 假如你的webpack配置长这样，如果没有pitch函数，应该从右往左，即sass-loader css-loader style-loader，如果三个loader都有pitch函数，执行顺序变成这样，style-loader-pitch css-loader-pitch sass-loader-pitch sass-loader css-loader style-loader，如果在这条代码链的执行过程中，有某一个loader的pitch返回了一个值，后面loader的代码就不执行了。
 
-回到真实情况，这里的style-loader-pitch返回了值，所以只会执行style-loader-pitch与style-loader。
+回到真实情况，这里的style-loader-pitch返回了值，所以只会执行style-loader-pitch。
 
 这个pitch函数大多数逻辑我们并不需要关注，我仅仅想知道它是如何把css插入dom的（我很懒）。所以只需要关注这个loader最后返回了什么东西，下面是我通过debugger提取出来syle-loader最后生成的东西。
 ```javascript
@@ -498,4 +499,258 @@ import content, * as namedExport from "!!./loaders/css-loader/index.js!./loaders
 ```
 webpack会解析这个import（带有感叹号的会忽略），然后在import的过程中会执行sass-loader、css-loader。
 # babel-loader
+[源码](https://github.com/babel/babel-loader/blob/v9.1.3/src/index.js)
+
+首先看这个文件导出了什么东西 [makeLoader](https://github.com/babel/babel-loader/blob/v9.1.3/src/index.js#L37)
+```javascript
+function makeLoader(callback) {
+  const overrides = callback ? callback(babel) : undefined;
+
+  return function (source, inputSourceMap) {
+    // Make the loader async
+    const callback = this.async();
+
+    loader.call(this, source, inputSourceMap, overrides).then(
+      args => callback(null, ...args),
+      err => callback(err),
+    );
+  };
+}
+```
+这个makeLoader是个高阶函数，默认导出的时候直接执行了，这个函数有一个参数callback，先不管这个参数，这个函数return了另一个函数
+```javascript
+function (source, inputSourceMap){
+ const callback = this.async();
+
+ loader.call(this, source, inputSourceMap, overrides).then(
+     args => callback(null, ...args),
+     err => callback(err),
+ );
+}
+```
+这个匿名函数内部调用了loader函数，所以最后babel-loader真正执行的时候实际上在执行[loader](https://github.com/babel/babel-loader/blob/v9.1.3/src/index.js#L54)函数。为了方便理解，这里先把loaderOptions.customize的代码移除了，这是处理后的代码
+```javascript
+async function loader(source, inputSourceMap, overrides) {
+  const filename = this.resourcePath; //拿到编译的文件名
+
+  let loaderOptions = this.getOptions(); // 拿到配置babel-loader时的options
+  validateOptions(schema, loaderOptions, { // 验证options的合法性
+    name: "Babel loader",
+  });
+  
+  // Deprecation handling
+  if ("forceEnv" in loaderOptions) {
+    console.warn(
+      "The option `forceEnv` has been removed in favor of `envName` in Babel 7.",
+    );
+  }
+  if (typeof loaderOptions.babelrc === "string") {
+    console.warn(
+      "The option `babelrc` should not be set to a string anymore in the babel-loader config. " +
+        "Please update your configuration and set `babelrc` to true or false.\n" +
+        "If you want to specify a specific babel config file to inherit config from " +
+        "please use the `extends` option.\nFor more information about this options see " +
+        "https://babeljs.io/docs/core-packages/#options",
+    );
+  }
+
+  // Standardize on 'sourceMaps' as the key passed through to Webpack, so that
+  // users may safely use either one alongside our default use of
+  // 'this.sourceMap' below without getting error about conflicting aliases.
+  if (
+    Object.prototype.hasOwnProperty.call(loaderOptions, "sourceMap") &&
+    !Object.prototype.hasOwnProperty.call(loaderOptions, "sourceMaps")
+  ) {
+    loaderOptions = Object.assign({}, loaderOptions, {
+      sourceMaps: loaderOptions.sourceMap,
+    });
+    delete loaderOptions.sourceMap;
+  }
+  // 对loaderOptions中的sourceMaps就行纠正
+
+  const programmaticOptions = Object.assign({}, loaderOptions, {
+    filename,
+    inputSourceMap: inputSourceMap || loaderOptions.inputSourceMap,
+
+    // Set the default sourcemap behavior based on Webpack's mapping flag,
+    // but allow users to override if they want.
+    sourceMaps:
+      loaderOptions.sourceMaps === undefined
+        ? this.sourceMap
+        : loaderOptions.sourceMaps,
+
+    // Ensure that Webpack will get a full absolute path in the sourcemap
+    // so that it can properly map the module back to its internal cached
+    // modules.
+    sourceFileName: filename,
+  });
+  // Remove loader related options
+  delete programmaticOptions.customize;
+  delete programmaticOptions.cacheDirectory;
+  delete programmaticOptions.cacheIdentifier;
+  delete programmaticOptions.cacheCompression;
+  delete programmaticOptions.metadataSubscribers;
+  // 通过克隆loaderOptions生成programmaticOptions，同时删除programmaticOptions上面不需要的属性
+
+  const config = await babel.loadPartialConfigAsync(
+    injectCaller(programmaticOptions, this.target),
+  );
+  // 通过babel.loadPartialConfigAsync把programmaticOptions处理成一个config
+  if (config) {
+    let options = config.options;
+
+    if (options.sourceMaps === "inline") {
+      // Babel has this weird behavior where if you set "inline", we
+      // inline the sourcemap, and set 'result.map = null'. This results
+      // in bad behavior from Babel since the maps get put into the code,
+      // which Webpack does not expect, and because the map we return to
+      // Webpack is null, which is also bad. To avoid that, we override the
+      // behavior here so "inline" just behaves like 'true'.
+      options.sourceMaps = true;
+    }
+
+    const {
+      cacheDirectory = null,
+      cacheIdentifier = JSON.stringify({
+        options,
+        "@babel/core": transform.version,
+        "@babel/loader": version,
+      }),
+      cacheCompression = true,
+      metadataSubscribers = [],
+    } = loaderOptions;
+
+    let result;
+    if (cacheDirectory) { // 如果配置了cacheDirectory，会优先从缓存里拿编译结果，否则调用transfrom函数，具体的执行过程下面会说
+      result = await cache({
+        source,
+        options,
+        transform,
+        cacheDirectory,
+        cacheIdentifier,
+        cacheCompression,
+      });
+    } else {
+      result = await transform(source, options);
+    }
+
+    config.files.forEach(configFile => this.addDependency(configFile)); // 如果babel-loader的配置是在单独的文件里，比如babel.config.js，这里的config.files会包含配置文件的路径，然后通过addDependency把配置文件加入wenpack的依赖里。
+
+    if (result) {
+      const { code, map, metadata, externalDependencies } = result;
+
+      externalDependencies?.forEach(dep => this.addDependency(dep)); // this.addDependency同上
+      metadataSubscribers.forEach(subscriber => {
+        subscribe(subscriber, metadata, this);
+      });
+
+      return [code, map];
+    }
+  }
+
+  // If the file was ignored, pass through the original content.
+  return [source, inputSourceMap];
+}
+```
+接下来看一下babel-loader是如何编译文件的，实际上真正把source转换成ast的过程先是通过babel-core，然后通过babel-parse实现的，babel-loader在这里仅仅实现了个缓存编译结果的功能。
+
+[cache.js](https://github.com/babel/babel-loader/blob/v9.1.3/src/cache.js#L165)
+
+```javascript
+module.exports = async function (params) {
+  let directory;
+  // 这里cacheDirectory可以是个字符串，代表缓存路径，也可以是个布尔值，代表是否开启缓存
+  if (typeof params.cacheDirectory === "string") {
+    directory = params.cacheDirectory;
+  } else {
+    if (defaultCacheDirectory === null) {
+      const { default: findCacheDir } = await findCacheDirP;
+      defaultCacheDirectory =
+        findCacheDir({ name: "babel-loader" }) || os.tmpdir();
+    }
+
+    directory = defaultCacheDirectory;
+  }
+  //  这个findCacheDir会找node_modules下的.cache作为缓存目录，然后调用handleCache
+
+  return await handleCache(directory, params);
+};
+```
+[handleCache](https://github.com/babel/babel-loader/blob/v9.1.3/src/cache.js#L86)
+```javascript
+const handleCache = async function (directory, params) {
+  const {
+    source,
+    options = {},
+    cacheIdentifier,
+    cacheDirectory,
+    cacheCompression,
+  } = params;
+
+  const file = path.join(directory, filename(source, cacheIdentifier, options));
+  
+  //这个filename函数会根据source、cacheIdentifier与options生成唯一的缓存文件名
+
+  try {
+    // No errors mean that the file was previously cached
+    // we just need to return it
+    return await read(file, cacheCompression); // 尝试读取这个缓存文件，如果存在直接返回
+  } catch (err) {}
+    // 一旦catch到错误，说明文件不存在
+  const fallback =
+    typeof cacheDirectory !== "string" && directory !== os.tmpdir(); // 这个callback的意思是：一旦mkdir失败，会把os.tmpdir()作为缓存文件夹，重新执行handleCache
+
+  // Make sure the directory exists.
+  try {
+    // overwrite directory if exists
+    await mkdir(directory, { recursive: true });
+  } catch (err) {
+    if (fallback) {
+      return handleCache(os.tmpdir(), params);
+    }
+
+    throw err;
+  }
+
+  // Otherwise just transform the file
+  // return it to the user asap and write it in cache
+  const result = await transform(source, options); // 如果file不存在会调用transform转换代码
+
+  // Do not cache if there are external dependencies,
+  // since they might change and we cannot control it.
+  if (!result.externalDependencies.length) {
+    try {
+      await write(file, cacheCompression, result); // 写入缓存
+    } catch (err) {
+      if (fallback) {
+        // Fallback to tmpdir if node_modules folder not writable
+        return handleCache(os.tmpdir(), params);
+      }
+
+      throw err;
+    }
+  }
+
+  return result;
+};
+```
+上面的解释省略了overrides部分，以下尝试解释这一部分。
+
+从代码来看，通过执行overrides相关的函数，可以重写代码中的一些参数，从而影响代码的结果，比如: 
+
+1. [重写loaderOptions](https://github.com/babel/babel-loader/blob/v9.1.3/src/index.js#L92)
+2. [重写options](https://github.com/babel/babel-loader/blob/v9.1.3/src/index.js#L158)
+3. [重写result](https://github.com/babel/babel-loader/blob/v9.1.3/src/index.js#L204)
+
+有两种方式生成overrides:
+1. 手动调用这个makeLoader函数，通过传入callback生成overrides。
+2. 通过loaderOptions.customize，从代码来看，内部会require这个customize，具体的执行过程参加81行-87行。
+
+两种方式生成的overrides意义是一样的，且两种方式不能共存。
+
+以上便是babel-loader的工作原理。
+## babel-core
+### 配置调试环境
+手动编译babel项目，生成适合调试的源码
+## babel-parse
 # vue-loader
