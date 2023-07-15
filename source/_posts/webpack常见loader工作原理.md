@@ -744,13 +744,106 @@ const handleCache = async function (directory, params) {
 
 有两种方式生成overrides:
 1. 手动调用这个makeLoader函数，通过传入callback生成overrides。
-2. 通过loaderOptions.customize，从代码来看，内部会require这个customize，具体的执行过程参加81行-87行。
+2. 通过loaderOptions.customize，从代码来看，内部会require这个customize，具体的执行过程参见81行-87行。
 
 两种方式生成的overrides意义是一样的，且两种方式不能共存。
 
 以上便是babel-loader的工作原理。
 ## babel-core
 ### 配置调试环境
-手动编译babel项目，生成适合调试的源码
+为什么上面介绍loader都是直接把代码copy过来，配置一下ide就能debug，而这个要单拎出来介绍，是因为babel-core是babel项目的一个子文件夹，而整个babel项目都是typescript写的，当然也可以像上面那样，copy ts源码自己配调试环境，没什么困难是只有一种解决方案的，区别在于效率的高低。所以我的建议是可以先看一下原作者是怎么编译babel这个项目的。
+
+这个[build](https://github.com/babel/babel/blob/v7.22.9/package.json#L11)命令便是项目的打包入口，这个npm script会找Makefile脚本，执行它的build命令，经过一系列跳转，最终执行的是 node Makefile.js build，Makefile.js是混淆过的代码，为了方便可以看Makefile.source.mjs。
+
+执行 node Makefile.source.mjs build 实际上运行的代码是:
+```javascript
+target["build"] = function () {
+  target["build-no-bundle"]();
+
+  if (process.env.BABEL_COVERAGE != "true") {
+    target["build-standalone"]();
+  }
+};
+```
+假设环境变量里面没有BABEL_COVERAGE
+```javascript
+target["build-no-bundle"] = function () {
+  target["clean"](); // 这条命令会删除SOURCES文件夹下所有的test/tmp文件夹以及test-fixtures.json文件，还会删除.npmrc、coverage、packages/*/npm-debug*与node_modules/.cache。
+  target["clean-lib"](); //这条命令会删除SOURCES文件夹下所有的lib目录。
+
+  node(["scripts/set-module-type.js"]); // 这条命令会读取项目的.module-type文件，拿到模块类型（commonjs或者module），然后在eslint、codemods、packages下面，扫描遍历它们的子文件夹，找到lib/package.json文件，把它们的type改成与.module-type相同的值。
+
+  env(
+    () => {
+      yarn(["gulp", "build-dev"]); //这是一条复合命令，后面会介绍
+    },
+    { BABEL_ENV: "development" }
+  );
+
+  target["build-flow-typings"](); //这里不关心flow，所以这条命令可以忽略
+  target["build-dist"](); // 这条命令会打包babel-plugin-transform-runtime
+
+  target["build-standalone"](); // 这个命令会执行babel-standalone的相关构建，我们这里的演示都是在nodejs环境中进行，所以不需要关心babel-standalone。
+};
+```
+上面这一堆只需要关心两条命令: 
+1. node(["scripts/set-module-type.js"]);
+2. yarn(["gulp", "build-dev"]);
+
+第一条命令会统一项目中所有包的模块类型，不然打包结束后需要手动处理不同的模块类型相互引用的问题。
+
+第二条命令
+```javascript
+gulp.task(
+  "build-dev",
+  gulp.series(
+    "build-vendor",
+    "build-no-bundle",
+    gulp.parallel(
+      "generate-standalone",
+      "generate-runtime-helpers",
+      gulp.series(
+        "generate-type-helpers",
+        // rebuild @babel/types since type-helpers may be changed
+        "build-no-bundle",
+        "build-cjs-bundles"
+      )
+    )
+  )
+);
+
+```
+又是一大堆，其实只需要关心build-vendor与build-no-bundle。
+
+build-no-bundle实际上执行的是buildBabel，这个函数会扫描codemods|packages|eslint目录下所有的文件，挨个调用babel-core的transformAsync方法，最后把结果保存在各自文件夹下的lib目录下，其中有个createWorker，这个函数会计算可用进程数，如果有可用进程，会先计算一个合理的进程数避免卡死，然后通过jest-worker这个库实现多线程，如果没有可用进程，则直接执行任务。
+
+由此可见build-no-bundle才是核心，这条命令也会打包babel-core，但是只执行它babel-core是无法运行的，少了一个文件packages/babel-core/lib/vendor/import-meta-resolve.js。这个文件是由build-vendor生成的。这个文件的作用是给不支持import-meta语法的环境提供一个polyfill，具体生成细节可以看[这里](https://github.com/babel/babel/blob/v7.22.9/Gulpfile.mjs#L755) 。
+
+综上，要想顺利打包，只需执行三条命令:
+1. node scripts/set-module-type.js module
+2. buildBabel
+3. gulp build-vendor
+
+为此我专门写了个[脚本](https://github.com/likaiqiang/babel/blob/main/build-babel-core.mjs)。但是有两个疑问:
+1. 我们的目标是babel-core，为什么要打包几乎所有的代码。
+2. 为什么不自己写个简单的babel.config.js，而是要复用原项目的。
+
+对于问题1，我们先看看babel-core的package.json是怎么描述依赖的。
+```javascript
+//...
+"@ampproject/remapping": "^2.2.0",
+ "@babel/code-frame": "workspace:^",
+ "@babel/generator": "workspace:^",
+ "@babel/helper-compilation-targets": "workspace:^",
+ "@babel/helper-module-transforms": "workspace:^",
+ "@babel/helpers": "workspace:^",
+ "@babel/parser": "workspace:^",
+ "@babel/template": "workspace:^",
+//...
+```
+这种workspace写法相当于为这些依赖创建了一种软连接，所以需要打包所有代码。
+
+对于问题2，其实也跟问题1有关，由于需要打包所有代码，而整个babel项目的config都共享这个[babel.config.js](https://github.com/babel/babel/blob/v7.22.9/babel.config.js)文件，而不同的子项目babel config还不一样，作者使用overrides区分。另一个原因是项目中有一些变量是找不到在哪里定义的，比如说这个[PACKAGE_JSON](https://github.com/babel/babel/blob/v7.22.9/packages/babel-core/src/index.ts#L1)，这个值的来源也跟babel.config.js有关，可以看看[566行](https://github.com/babel/babel/blob/v7.22.9/babel.config.js#L566)，这个项目中像这种通过babel plugin在编译中替换特定值的做法还有很多，所以干脆复用这个config文件。
+### babel-core源码
 ## babel-parse
 # vue-loader
