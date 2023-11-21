@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>RN通过Android Intent打开媒体及播放! | Hexo</title><meta name="author" content="likaiqiang"><meta name="copyright" content="likaiqiang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="最近在阅读lx-music-mobile的代码，原作者代码写的很好，我在他的基础上增加了下载与本地音乐播放功能，原作者不实现肯定有他的考虑，我恰好有这个需求而已。 以上功能完成以后，我就想着能不能进一步直接在文件管理器中用lx.music打开某音乐，经过一番研究，发现在AndroidManifest"><link rel="shortcut icon" href="/img/siteicon/favicon.ico"><link rel="canonical" href="https://likaiqianglearn.cn/2023/11/21/RN%E9%80%9A%E8%BF%87Android%20Intent%E6%89%93%E5%BC%80%E5%AA%92%E4%BD%93%E5%8F%8A%E6%92%AD%E6%94%BE!/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><meta name="msapplication-TileColor" content="#ffffff"/><link rel="apple-touch-icon" sizes="180x180" href="/img/siteicon/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/img/siteicon/favicon-32x32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/img/siteicon/favicon-16x16.png"/><link rel="mask-icon" href="/img/siteicon/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'RN通过Android Intent打开媒体及播放!',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2023-11-21 13:59:54'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/QQ图片20210723090732.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> HOME</span></a></div><div class="menus_item"><a class="site-page" href="/2022/04/16/%E4%B8%80%E4%BA%9B%E7%BB%8F%E9%AA%8C%E7%89%87%E6%AE%B5/"><i class="fa-fw fas fa-archive"></i><span> GIST</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/微信图片_20211121110405.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Hexo"><span class="site-name">Hexo</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> HOME</span></a></div><div class="menus_item"><a class="site-page" href="/2022/04/16/%E4%B8%80%E4%BA%9B%E7%BB%8F%E9%AA%8C%E7%89%87%E6%AE%B5/"><i class="fa-fw fas fa-archive"></i><span> GIST</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">RN通过Android Intent打开媒体及播放!</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-11-21T20:24:56.000Z" title="Created 2023-11-21 20:24:56">2023-11-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-11-21T13:59:54.225Z" title="Updated 2023-11-21 13:59:54">2023-11-21</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="RN通过Android Intent打开媒体及播放!"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>最近在阅读lx-music-mobile的代码，原作者代码写的很好，我在他的基础上增加了下载与本地音乐播放功能，原作者不实现肯定有他的考虑，我恰好有这个需求而已。</p>
+<p>以上功能完成以后，我就想着能不能进一步直接在文件管理器中用lx.music打开某音乐，经过一番研究，发现在AndroidManifest.xml加上这些代码:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span>&gt;</span></span><br><span class="line">    //...</span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.action.VIEW&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.category.DEFAULT&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.category.APP_MUSIC&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:mimeType</span>=<span class="string">&quot;audio/*&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:mimeType</span>=<span class="string">&quot;application/ogg&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:mimeType</span>=<span class="string">&quot;application/x-ogg&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:mimeType</span>=<span class="string">&quot;application/itunes&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">&quot;content&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">&quot;file&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    //...</span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在文件管理器里面打开某音乐时，lx.music就会出现在可选择列表里。这样点击lx.music仅仅会唤起app而已，后面还需要实现“响应这个操作并播放音乐文件”。</p>
+<p>先说一下这个intent，以我的初步理解，这东西是android内部不同app之间进行通讯的，在文件管理器打开音乐文件时发送了一个intent，lx.music匹配到这个intent（参见intent-filter的规则）后，需要解析出intent里面的内容，由于播放器的逻辑是rn实现的，所以需要给rn发送一个事件，js那边通过DeviceEventEmitter监听这个事件拿到音乐文件真实的路径。</p>
+<p>这里的顺序很重要，需要js先通过DeviceEventEmitter监听这个事件，然后android发送这个事件，js那边才能收到。</p>
+<p>app冷启动时，首先启动MainActivity，依次执行onCreate onStart onResume这些生命周期，然后加载并执行js代码，执行完毕后，会初始化reactContext对象。在onCreate onStart onResume这些生命周期里是拿不到reactContext的，所以就需要这样的代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MainActivity</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(Bundle savedInstanceState)</span>&#123;</span><br><span class="line">        <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        <span class="keyword">final</span> <span class="type">ReactInstanceManager</span> <span class="variable">reactInstanceManager</span> <span class="operator">=</span> ((MainApplication) getApplication()).getReactNativeHost().getReactInstanceManager();</span><br><span class="line">        reactInstanceManager.addReactInstanceEventListener(<span class="keyword">new</span> <span class="title class_">ReactInstanceManager</span>.ReactInstanceEventListener() &#123;</span><br><span class="line">          <span class="meta">@Override</span></span><br><span class="line">          <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onReactContextInitialized</span><span class="params">(ReactContext context)</span> &#123;</span><br><span class="line">            reactContext = context;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">if</span> (reactInstanceManager.hasStartedCreatingInitialContext()) &#123;</span><br><span class="line">          reactContext = reactInstanceManager.getCurrentReactContext();</span><br><span class="line">          <span class="comment">// ReactContext已经创建完成，可以直接获取</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>reactContext不为null，说明js代码执行完毕，在android端执行:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)</span><br><span class="line">          .emit(<span class="string">&quot;onPathReceived&quot;</span>, event);</span><br></pre></td></tr></table></figure>
+<p>在js端，通过以下代码接收这个消息:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> eventListener = <span class="title class_">DeviceEventEmitter</span>.<span class="title function_">addListener</span>(<span class="string">&#x27;onPathReceived&#x27;</span>, <span class="function"><span class="params">eventParams</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>值得注意的是，刚才说android会在js执行完毕后初始化reactContext对象，这里的“执行完毕”具体指的是什么，都执行了哪些代码。假如是在浏览器上，一个标准的react组件:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">app</span> = (<span class="params"></span>)=&gt;&#123;</span><br><span class="line">    <span class="title function_">useEffect</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">        <span class="comment">//...</span></span><br><span class="line">    &#125;,[])</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>a page<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span> </span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个组件是如何渲染到浏览器上的？首先会执行render函数，把虚拟dom转换成真实的dom挂载到浏览器上，dom只是浏览器内部的一种数据结构，真正把画面渲染出来是浏览器做的工作，浏览器渲染完毕，会执行useEffect的回调函数。</p>
+<p>在react-native上，js的宿主环境不是浏览器，渲染工作是由原生完成的，由此可见，上面说的“执行完毕”仅仅执行了render函数，所以不能把DeviceEventEmitter.addListener放在useEffect里面，应该更提前，比如放在组件外面:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> eventListener = <span class="title class_">DeviceEventEmitter</span>.<span class="title function_">addListener</span>(<span class="string">&#x27;onPathReceived&#x27;</span>, <span class="function"><span class="params">eventParams</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">global</span>.<span class="property">event</span>.<span class="title function_">emit</span>(<span class="string">&#x27;onPathReceived&#x27;</span>,eventParams.<span class="property">path</span>)</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">app</span> = (<span class="params"></span>)=&gt;&#123;</span><br><span class="line">    <span class="title function_">useEffect</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">        <span class="variable language_">global</span>.<span class="property">event</span>.<span class="title function_">on</span>(<span class="string">&#x27;onPathReceived&#x27;</span>,<span class="function"><span class="params">path</span>=&gt;</span>&#123;</span><br><span class="line">            </span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;,[])</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>a page<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span> </span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样又带来一个问题，当onPathReceived触发时，很可能render函数还没有执行完，即使发射了onPathReceived事件，也没有任何响应，这里可以设置一个缓存，比如这样:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Event</span> &#123;</span><br><span class="line">  <span class="attr">cache</span>: <span class="title class_">Map</span>&lt;string, <span class="title class_">Array</span>&lt;any&gt;&gt;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">super</span>()</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">cache</span> = <span class="keyword">new</span> <span class="title class_">Map</span>()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">on</span>(<span class="params">eventName: string, listener: (...args: any[]) =&gt; any</span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查缓存中是否有提前 emit 的事件</span></span><br><span class="line">    <span class="keyword">let</span> cachedEvents = <span class="variable language_">this</span>.<span class="property">cache</span>.<span class="title function_">get</span>(eventName)</span><br><span class="line">    <span class="keyword">if</span> (cachedEvents) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> args <span class="keyword">of</span> cachedEvents) &#123;</span><br><span class="line">        <span class="title function_">listener</span>(...args)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">cache</span>.<span class="title function_">delete</span>(eventName)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">emit</span>(<span class="params">eventName: string, ...args: any[]</span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果没有监听器，将事件保存到缓存中</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">listeners</span>.<span class="title function_">has</span>(eventName)) &#123;</span><br><span class="line">      <span class="keyword">let</span> cachedEvents = <span class="variable language_">this</span>.<span class="property">cache</span>.<span class="title function_">get</span>(eventName)</span><br><span class="line">      <span class="keyword">if</span> (!cachedEvents) <span class="variable language_">this</span>.<span class="property">cache</span>.<span class="title function_">set</span>(eventName, cachedEvents = [])</span><br><span class="line">      cachedEvents.<span class="title function_">push</span>(args)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就ok了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://likaiqianglearn.cn">likaiqiang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://likaiqianglearn.cn/2023/11/21/RN%E9%80%9A%E8%BF%87Android%20Intent%E6%89%93%E5%BC%80%E5%AA%92%E4%BD%93%E5%8F%8A%E6%92%AD%E6%94%BE!/">https://likaiqianglearn.cn/2023/11/21/RN%E9%80%9A%E8%BF%87Android%20Intent%E6%89%93%E5%BC%80%E5%AA%92%E4%BD%93%E5%8F%8A%E6%92%AD%E6%94%BE!/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/QQ图片20210723090732.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/06/21/%E6%89%8B%E5%86%99promise/" title="手写promise"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">手写promise</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://likaiqiang-blog.oss-cn-beijing.aliyuncs.com/images/QQ图片20210723090732.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">likaiqiang</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/21/RN%E9%80%9A%E8%BF%87Android%20Intent%E6%89%93%E5%BC%80%E5%AA%92%E4%BD%93%E5%8F%8A%E6%92%AD%E6%94%BE!/" title="RN通过Android Intent打开媒体及播放!">RN通过Android Intent打开媒体及播放!</a><time datetime="2023-11-21T20:24:56.000Z" title="Created 2023-11-21 20:24:56">2023-11-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/21/%E6%89%8B%E5%86%99promise/" title="手写promise">手写promise</a><time datetime="2023-06-21T22:37:56.000Z" title="Created 2023-06-21 22:37:56">2023-06-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/05/08/webpack%E5%B8%B8%E8%A7%81loader%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" title="webpack常见loader工作原理">webpack常见loader工作原理</a><time datetime="2023-05-08T15:13:26.000Z" title="Created 2023-05-08 15:13:26">2023-05-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/04/19/%E6%95%B4%E7%90%86react%E9%87%8C%E9%9D%A2%E9%82%A3%E4%BA%9B%E5%AE%B9%E6%98%93%E8%AE%A9%E4%BA%BA%E6%B7%B7%E6%B7%86%E7%9A%84%E6%A6%82%E5%BF%B5-u-1F602/" title="整理react里面那些容易让人混淆的概念 😂">整理react里面那些容易让人混淆的概念 😂</a><time datetime="2023-04-19T14:19:09.000Z" title="Created 2023-04-19 14:19:09">2023-04-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/03/17/%E5%AD%A6%E4%B9%A0ahooks%E4%B9%8BuseLongPress/" title="学习ahooks之useLongPress">学习ahooks之useLongPress</a><time datetime="2023-03-17T19:23:09.000Z" title="Created 2023-03-17 19:23:09">2023-03-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By likaiqiang</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
