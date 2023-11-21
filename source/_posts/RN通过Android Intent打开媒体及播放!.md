@@ -90,7 +90,7 @@ const app = ()=>{
     )
 }
 ```
-这样又带来一个问题，当onPathReceived触发时，很可能render函数还没有执行完，即使发射了onPathReceived事件，也没有任何响应，这里可以设置一个缓存，比如这样:
+这样又带来一个问题，当onPathReceived触发时，很可能涉及音乐播放的组件还没有渲染（比如有的组件是动态加载的），即使发射了onPathReceived事件，也没有任何响应，这里可以设置一个缓存，比如这样:
 ```javascript
 class Event {
   cache: Map<string, Array<any>>
